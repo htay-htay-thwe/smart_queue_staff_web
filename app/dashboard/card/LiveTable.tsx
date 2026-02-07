@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -19,8 +21,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SlidersHorizontal } from "lucide-react";
 import FilterBtn from "./FilterBtn";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import PaginationSeatAssign from "@/app/queue/card/PaginationSeatAssign";
 
 const user = [
   {
@@ -98,6 +102,8 @@ const user = [
 ];
 
 export default function LiveTable() {
+  const pathname = usePathname();
+
   return (
     <Card>
       <CardHeader>
@@ -115,6 +121,9 @@ export default function LiveTable() {
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Time Queued</TableHead>
               <TableHead className="text-right">Estimated Time</TableHead>
+              {pathname === "/queue" && (
+                <TableHead className="text-center">-</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -147,11 +156,23 @@ export default function LiveTable() {
                 <TableCell className="text-right text-muted-foreground">
                   {user.estimatedTime}
                 </TableCell>
+                {pathname === "/queue" && (
+                  <TableCell className="text-center">
+                    <Button className="bg-blue-600">Assign Seat</Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardContent>
+     {pathname === "/queue" && (
+      <CardFooter className="mt-2">
+       <div  className="items-start">
+         <PaginationSeatAssign/>
+       </div>
+      </CardFooter>
+     )}
     </Card>
   );
 }

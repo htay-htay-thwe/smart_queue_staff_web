@@ -11,10 +11,10 @@ import { Search } from "lucide-react";
 
 export default function SearchItem() {
   return (
-    <div className="p-6 w-full flex flex-row gap-4">
-      <Image className="object-contain h-8 w-8" src={Noti} alt="Notification" />
+    <div className=" w-full flex flex-row gap-4 px-10">
+      <Image className="object-contain h-6 w-6 mt-2" src={Noti} alt="Notification" />
 
-        <InputGroup>
+        <InputGroup className="w-full" >
           <InputGroupInput id="input-group-url" placeholder="Search here ..." />
           <InputGroupAddon align="inline-end">
             <Search size={28} strokeWidth={1.5} absoluteStrokeWidth />
