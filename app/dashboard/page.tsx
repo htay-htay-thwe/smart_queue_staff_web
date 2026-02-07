@@ -11,11 +11,6 @@ export default function Dashboard() {
         <div className="flex flex-col gap-5">
           <QueuePie />
           <MostQueueUser />
-          <div className="flex flex-row gap-5 w-full justify-center text-gray-600 ">
-            <div>Smart Queue System © 2026 smart queue, Inc.</div>
-            <div className="border border-r-gray-300"></div>
-            <div>Community guidelines Terms of service</div>
-          </div>
         </div>
       </div>
 

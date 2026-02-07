@@ -25,6 +25,7 @@ import FilterBtn from "./FilterBtn";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PaginationSeatAssign from "@/app/queue/card/PaginationSeatAssign";
+import Link from "next/link";
 
 const user = [
   {
@@ -158,7 +159,9 @@ export default function LiveTable() {
                 </TableCell>
                 {pathname === "/queue" && (
                   <TableCell className="text-center">
-                    <Button className="bg-blue-600">Assign Seat</Button>
+                    <Link href="/seat-Place">
+                      <Button className="bg-blue-600">Assign Seat</Button>
+                    </Link>
                   </TableCell>
                 )}
               </TableRow>
@@ -166,13 +169,13 @@ export default function LiveTable() {
           </TableBody>
         </Table>
       </CardContent>
-     {pathname === "/queue" && (
-      <CardFooter className="mt-2">
-       <div  className="items-start">
-         <PaginationSeatAssign/>
-       </div>
-      </CardFooter>
-     )}
+      {pathname === "/queue" && (
+        <CardFooter className="mt-2">
+          <div className="items-start">
+            <PaginationSeatAssign />
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
