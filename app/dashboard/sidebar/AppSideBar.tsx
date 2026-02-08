@@ -33,11 +33,11 @@ import SmartQLogo from "@/asset/image/Logo.png";
 import V from "@/asset/image/v.png";
 
 const menuItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/queue", icon: Ticket, label: "Queue" },
-  { href: "/history", icon: History, label: "History" },
-  { href: "/settings", icon: Settings, label: "Settings" },
-  { href: "/report", icon: FileText, label: "Report" },
+  { href: "/dashboard/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/queue", icon: Ticket, label: "Queue" },
+  { href: "/dashboard/history", icon: History, label: "History" },
+  { href: "/dashboard/settings", icon: Settings, label: "Settings" },
+  { href: "/dashboard/report", icon: FileText, label: "Report" },
 ];
 
 export default function AppSideBar() {

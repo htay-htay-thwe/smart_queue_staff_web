@@ -24,8 +24,9 @@ import {
 import FilterBtn from "./FilterBtn";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import PaginationSeatAssign from "@/app/queue/card/PaginationSeatAssign";
+
 import Link from "next/link";
+import PaginationSeatAssign from "../../queue/card/PaginationSeatAssign";
 
 const user = [
   {

@@ -1,4 +1,5 @@
-import LiveTable from "@/app/dashboard/card/LiveTable";
+import LiveTable from "../../dashboard/card/LiveTable";
+
 
 export default function AssignLiveTable() {
   return (
