@@ -11,8 +11,8 @@ import QueueCircle from "../statistics/QueueCircle";
 
 export default function QueuePie() {
   return (
-    <div>
-      <Card className="w-full gap-1">
+    <div className="group">
+      <Card className="w-full gap-1 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
         <CardHeader className="">
           <CardTitle>Accepted vs Cancel</CardTitle>
           <CardAction className="bg-gray-100 p-1 text-sm rounded-sm">

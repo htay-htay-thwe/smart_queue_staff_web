@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/auth/register/stepOne", "app/auth/register/stepTwo"  ],
   "exclude": ["node_modules"]
 }

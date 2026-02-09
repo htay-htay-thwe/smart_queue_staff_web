@@ -1,0 +1,123 @@
+"use client";
+
+import { Field, FieldGroup } from "@/components/ui/field";
+import { StepIndicator } from "../StepIndicator";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { CheckCircle, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import ShopTypeSelect from "./card/ShopTypeSelect";
+import DescriptionField from "./card/DescriptionField";
+
+const formSchema = z.object({
+    shopType: z
+        .string()
+        .min(1, "* required"),
+    description: z
+        .string()
+        .min(10, "* minimum 10 characters required")
+        .max(500, "* maximum 500 characters allowed"),
+})
+
+export default function StepThree() {
+    const router = useRouter();
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            shopType: "",
+            description: "",
+        },
+    })
+
+    function onSubmit(data: z.infer<typeof formSchema>) {
+        toast.success("Registration Complete!", {
+            description: (
+                <div className="mt-2">
+                    <p className="font-semibold">All steps completed successfully!</p>
+                    <pre className="bg-code text-code-foreground mt-2 w-[340px] overflow-x-auto rounded-md p-4">
+                        <code>{JSON.stringify(data, null, 2)}</code>
+                    </pre>
+                </div>
+            ),
+            position: "bottom-right",
+            duration: 5000,
+            classNames: {
+                content: "flex flex-col gap-2",
+            },
+            style: {
+                "--border-radius": "calc(var(--radius) + 4px)",
+            } as React.CSSProperties,
+        })
+
+        // Redirect to dashboard after successful registration
+        setTimeout(() => {
+            router.push("/dashboard/dashboard");
+        }, 2000);
+    }
+
+    return (
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+            <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-12">
+                {/* Header Section */}
+                <div className="text-center mb-12 animate-fade-in">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">Final Step!</h1>
+                    <p className="text-gray-600">Tell us more about your business</p>
+                </div>
+
+                {/* Step Indicator */}
+                <div className="flex justify-center mb-12 animate-fade-in-delay-1">
+                    <StepIndicator currentStep={3} />
+                </div>
+
+                {/* Main Content Card */}
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-12 border border-white/20 animate-fade-in-delay-2">
+                    <form id="form-step-three" onSubmit={form.handleSubmit(onSubmit)}>
+                        <FieldGroup className="space-y-6">
+                            <ShopTypeSelect control={form.control} />
+                            <DescriptionField control={form.control} />
+                        </FieldGroup>
+
+                        {/* Navigation Buttons */}
+                        <div className="flex gap-4 mt-8">
+                            <Link
+                                href="/auth/register/stepTwo"
+                                className="flex-1 h-14 flex items-center justify-center gap-2 rounded-xl
+                                         border-2 border-gray-300 bg-white
+                                         text-base font-semibold text-gray-700
+                                         hover:bg-gray-50 hover:border-gray-400
+                                         transition-all duration-300 transform hover:scale-[1.02]
+                                         shadow-sm hover:shadow-md"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                                Back
+                            </Link>
+                            <Button 
+                                type="submit" 
+                                form="form-step-three" 
+                                className="flex-1 h-14 flex items-center justify-center gap-2 rounded-xl
+                                         bg-linear-to-r from-cyan-500 to-blue-400
+                                         text-base font-semibold text-white
+                                         hover:from-blue-400 hover:to-cyan-500
+                                         transition-all duration-300 transform hover:scale-[1.02]
+                                         shadow-lg hover:shadow-xl"
+                            >
+                                Complete Registration
+                                <CheckCircle className="w-5 h-5" />
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Progress Text */}
+                <div className="text-center mt-6 text-sm text-gray-500 animate-fade-in-delay-3">
+                    Step 3 of 3 - Final Step!
+                </div>
+            </div>
+        </div>
+    );
+}

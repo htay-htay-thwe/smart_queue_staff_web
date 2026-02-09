@@ -83,11 +83,10 @@ export default function AppSideBar() {
                           <SidebarMenuButton
                             asChild
                             className={`
-                                ${
-                                  isActive
-                                    ? "bg-black/30 border-l-4 border-white"
-                                    : "border-l-4 border-transparent"
-                                }                                     
+                                ${isActive
+                                ? "bg-black/30 border-l-4 border-white"
+                                : "border-l-4 border-transparent"
+                              }                                     
                               text-white hover:bg-black/20 hover:text-white 
                               ${isCollapsed ? "h-20 w-28 justify-center" : "h-12"} 
                               rounded-lg font-medium 
@@ -142,21 +141,19 @@ export default function AppSideBar() {
                       hover:text-white rounded-lg font-medium 
                       cursor-pointer transition-all duration-200 
                       active:opacity-70 active:scale-95
-                      ${
-                        isCollapsed
-                          ? "h-20 w-28 mx-auto justify-center"
-                          : "h-12 justify-center"
+                      ${isCollapsed
+                        ? "h-20 w-28 mx-auto justify-center"
+                        : "h-12 justify-center"
                       }
                     `}
                   >
-                    {isCollapsed ? (
-                      <LogOut className="!h-5 !w-5" />
-                    ) : (
-                      <>
-                        <LogOut size={48} color="white" />
-                        <span className="text-lg">Logout</span>
-                      </>
-                    )}
+                    <Link 
+                      href="/auth/loginPage"
+                      className="flex items-center gap-3"
+                    >
+                      <LogOut className={isCollapsed ? "!h-6 !w-6" : "h-5 w-5"} />
+                      {!isCollapsed && <span>Logout</span>}
+                    </Link>
                   </SidebarMenuButton>
                 </TooltipTrigger>
                 {isCollapsed && (

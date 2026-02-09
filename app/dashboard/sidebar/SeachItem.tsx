@@ -8,11 +8,12 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group"
 import { Search } from "lucide-react";
+import { NotificationBell } from "../noti/NotificationBell";
 
 export default function SearchItem() {
   return (
-    <div className=" w-full flex flex-row gap-4 px-10">
-      <Image className="object-contain h-6 w-6 mt-2" src={Noti} alt="Notification" />
+    <div className=" w-full flex flex-row max-w-md justify-end gap-4 px-10">
+      <NotificationBell />
 
         <InputGroup className="w-full" >
           <InputGroupInput id="input-group-url" placeholder="Search here ..." />

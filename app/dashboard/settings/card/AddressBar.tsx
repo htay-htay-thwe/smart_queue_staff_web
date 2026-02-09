@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EditAddressDialog } from "./EditAddressDialog";
 
 export default function Profile() {
     return (
@@ -9,9 +9,7 @@ export default function Profile() {
                     <h1 className="text-lg sm:text-xl font-semibold">
                         Address
                     </h1>
-                    <Button className="bg-black w-28 text-white hover:bg-transparent hover:no-underline">
-                        Edit
-                    </Button>
+                    <EditAddressDialog />
                 </div>
                 <div className="grid grid-cols-2 gap-4 mt-6">
                     <div>

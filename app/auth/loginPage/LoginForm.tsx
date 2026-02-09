@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { Mail, Lock, Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react"
 
 
 const formSchema = z.object({
@@ -28,6 +29,8 @@ const formSchema = z.object({
 })
 
 export function LoginForm() {
+    const [showPassword, setShowPassword] = React.useState(false);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -54,24 +57,30 @@ export function LoginForm() {
     }
 
     return (
-        <div className="w-full sm:max-w-md">
+        <div className="w-full">
+            <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">Sign In</h2>
+                <p className="text-gray-500 text-sm">Enter your credentials to access your account</p>
+            </div>
+
             <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
-                <FieldGroup>
+                <FieldGroup className="space-y-5">
                     <Controller
                         name="email"
                         control={form.control}
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="form-rhf-demo-email">
-                                    gmail
+                                <FieldLabel htmlFor="form-rhf-demo-email" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                    <Mail className="w-4 h-4 text-[#157aa2]" />
+                                    Email Address
                                 </FieldLabel>
                                 <Input
                                     {...field}
                                     id="form-rhf-demo-email"
                                     aria-invalid={fieldState.invalid}
-                                    placeholder="Login button not working on mobile"
-                                    autoComplete="off"
-                                    className="h-12 rounded-full border border-[#157aa2] px-3"
+                                    placeholder="Enter your email"
+                                    autoComplete="email"
+                                    className="h-12 rounded-xl border-2 border-gray-200 focus:border-[#157aa2] focus:ring-2 focus:ring-[#157aa2]/20 transition-all duration-300 px-4"
                                 />
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
@@ -84,18 +93,28 @@ export function LoginForm() {
                         control={form.control}
                         render={({ field, fieldState }) => (
                             <Field data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="form-rhf-demo-password">
-                                    password
+                                <FieldLabel htmlFor="form-rhf-demo-password" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                    <Lock className="w-4 h-4 text-[#157aa2]" />
+                                    Password
                                 </FieldLabel>
-                                <Input
-                                    {...field}
-                                    id="form-rhf-demo-password"
-                                    type="password"
-                                    aria-invalid={fieldState.invalid}
-                                    placeholder="Login button not working on mobile"
-                                    autoComplete="off"
-                                    className="h-12 rounded-full border border-[#157aa2] px-3"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        {...field}
+                                        id="form-rhf-demo-password"
+                                        type={showPassword ? "text" : "password"}
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="Enter your password"
+                                        autoComplete="current-password"
+                                        className="h-12 rounded-xl border-2 border-gray-200 focus:border-[#157aa2] focus:ring-2 focus:ring-[#157aa2]/20 transition-all duration-300 px-4 pr-12"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#157aa2] transition-colors duration-200"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
                                 {fieldState.invalid && (
                                     <FieldError errors={[fieldState.error]} />
                                 )}
@@ -103,19 +122,46 @@ export function LoginForm() {
                         )}
                     />
                 </FieldGroup>
-            </form>
-            <Field orientation="horizontal" className="mt-8 px-3 grid grid-cols-2 gap-4 w-full justify-center">
-                <Button type="submit" form="form-rhf-demo" className="bg-[#157aa2] border border-[#157aa2] hover:bg-white hover:text-black text-base rounded-md h-12 px-8 ">
-                    Login
+
+                {/* Forgot Password */}
+                <div className="mt-4 text-right">
+                    <a href="#" className="text-sm text-[#157aa2] hover:text-[#1C7AA5] font-medium transition-colors duration-200">
+                        Forgot password?
+                    </a>
+                </div>
+
+                {/* Login Button */}
+                <Button 
+                    type="submit" 
+                    form="form-rhf-demo" 
+                    className="w-full mt-6 h-12 bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] text-white text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                    Sign In
+                    <ArrowRight className="w-5 h-5" />
                 </Button>
-                <Link
-                    href="/auth/register"
-                    className="text-[#157aa2] text-sm underline hover:text-black underline-offset-4">
-                    Go to Register Page
-                </Link>
+            </form>
 
+            {/* Divider */}
+            <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-500">New to Smart Queue?</span>
+                </div>
+            </div>
 
-            </Field>
+            {/* Register Link */}
+            <Link href="/auth/register">
+                <Button 
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 border-2 border-[#157aa2] text-[#157aa2] hover:bg-[#157aa2] hover:text-white text-base font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                    <UserPlus className="w-5 h-5" />
+                    Register Account
+                </Button>
+            </Link>
         </div>
     )
 }

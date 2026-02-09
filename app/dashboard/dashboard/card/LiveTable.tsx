@@ -107,7 +107,7 @@ export default function LiveTable() {
   const pathname = usePathname();
 
   return (
-    <Card>
+    <Card className="transition-all duration-300 hover:shadow-xl">
       <CardHeader>
         <CardTitle className="text-xl">Live Queue Status</CardTitle>
         <CardAction className="-mt-2">
@@ -118,29 +118,31 @@ export default function LiveTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">No.</TableHead>
+              <TableHead className="w-25">No.</TableHead>
               <TableHead>Users</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Time Queued</TableHead>
               <TableHead className="text-right">Estimated Time</TableHead>
-              {pathname === "/queue" && (
-                <TableHead className="text-center">-</TableHead>
+              {pathname === "/dashboard/queue" && (
+                <TableHead className="text-center">Action</TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {user.map((user, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} className="transition-all duration-200 hover:bg-gray-50">
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
+                      <div className="relative w-8 h-8">
                     <Image
                       src={profile}
                       alt="User Avatar"
                       width={32}
                       height={32}
-                      className="rounded-full  border"
+                      className="rounded-full h-full w-full  border"
                     />
+                    </div>
                     <div className="text-base font-medium">{user.name}</div>
                   </div>
                 </TableCell>
@@ -158,10 +160,10 @@ export default function LiveTable() {
                 <TableCell className="text-right text-muted-foreground">
                   {user.estimatedTime}
                 </TableCell>
-                {pathname === "/queue" && (
+                {pathname === "/dashboard/queue" && (
                   <TableCell className="text-center">
-                    <Link href="/seat-Place">
-                      <Button className="bg-blue-600">Assign Seat</Button>
+                    <Link href="/dashboard/seat-Place">
+                      <Button className="bg-[#1c7aa5] transition-all duration-300 hover:bg-[#297a9f] hover:scale-105">Assign Seat</Button>
                     </Link>
                   </TableCell>
                 )}
@@ -170,7 +172,7 @@ export default function LiveTable() {
           </TableBody>
         </Table>
       </CardContent>
-      {pathname === "/queue" && (
+      {pathname === "/dashboard/queue" && (
         <CardFooter className="mt-2">
           <div className="items-start">
             <PaginationSeatAssign />

@@ -36,13 +36,13 @@ const data = [
 
 export default function MostQueueUser() {
   return (
-    <div>
-      <Card className="w-full gap-1">
+    <div className="group">
+      <Card className="w-full gap-1 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
         <CardHeader className="mb-3">
           <CardTitle>Most Queued Users</CardTitle>
         </CardHeader>
         {data.map((user, index) => (
-          <CardContent key={index} className="pt-2 flex gap-5 mt-2">
+          <CardContent key={index} className="pt-2 flex gap-5 mt-2 transition-all duration-200 hover:bg-gray-50 rounded-lg cursor-pointer">
             <Image
               src={profile}
               alt="User Avatar"

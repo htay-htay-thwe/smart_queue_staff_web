@@ -13,11 +13,9 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSideBar />
       <main className="w-full">
-        <div className="p-4 justify-between flex border-b bg-white sticky top-0 z-10">
+        <div className="p-4 justify-between flex items-center border-b bg-white sticky top-0 z-10 shadow-sm">
           <SidebarTrigger className="hover:bg-gray-100 " />
-          <div>
-            <SearchItem />
-          </div>
+          <SearchItem />
         </div>
 
         <div className="relative min-h-[calc(100vh-64px)]">

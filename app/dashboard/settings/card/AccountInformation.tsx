@@ -1,17 +1,18 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { EditInformation } from "./EditInformation";
+import { ChangeEmailDialog } from "./ChangeEmailDialog";
+import { ChangePhoneDialog } from "./ChangePhoneDialog";
+import { ChangePasswordDialog } from "./ChangePasswordDialog";
 
 export default function AccountInformation() {
   return (
     <div className="p-4 sm:p-6 w-full">
-      <Card className="w-full p-6 sm:p-7">
+      <Card className="w-full p-6 sm:p-7 transition-all duration-300 hover:shadow-xl">
         {/* Title */}
        <div className="flex justify-between items-center">
          <h1 className="text-lg sm:text-xl font-semibold">
           Account Information
         </h1>
-        <EditInformation/>
+
        </div>
 
         {/* Company + Date */}
@@ -43,9 +44,7 @@ export default function AccountInformation() {
                 htaythwe@gmail.com
               </div>
             </div>
-            <Button className="bg-blue-500 text-white w-full sm:w-32">
-              Change
-            </Button>
+            <ChangeEmailDialog />
           </div>
 
           {/* Phone */}
@@ -56,9 +55,7 @@ export default function AccountInformation() {
               </div>
               <div className="font-medium">+0823989048</div>
             </div>
-            <Button className="bg-blue-500 text-white w-full sm:w-32">
-              Change
-            </Button>
+            <ChangePhoneDialog />
           </div>
 
           {/* Password */}
@@ -69,9 +66,7 @@ export default function AccountInformation() {
               </div>
               <div className="font-medium">********</div>
             </div>
-            <Button className="bg-blue-500 text-white w-full sm:w-32">
-              Change
-            </Button>
+            <ChangePasswordDialog />
           </div>
 
           {/* Role */}

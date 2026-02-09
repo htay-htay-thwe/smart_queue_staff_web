@@ -25,8 +25,12 @@ export default function AuthLayout({
 }) {
 
   const [text, setText] = useState(sentences[0]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // Mark as client-side mounted
+    setIsClient(true);
+    
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * sentences.length);
       setText(sentences[randomIndex]);
