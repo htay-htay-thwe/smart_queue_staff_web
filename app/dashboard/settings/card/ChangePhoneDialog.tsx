@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,11 +14,59 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Phone, Check, X, Sparkles } from "lucide-react"
+import { Phone, Check, X, Sparkles, CheckCircle2 } from "lucide-react"
+import OTPVerificationDialog from "@/app/auth/register/stepOne/card/OTPVerificationDialog";
+import { toast } from "sonner";
 
 export function ChangePhoneDialog() {
+  const [newPhone, setNewPhone] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
+  const [showOTPDialog, setShowOTPDialog] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleVerifyClick = () => {
+    if (!newPhone || !/^[0-9]+$/.test(newPhone)) {
+      toast.error("Please enter a valid phone number", {
+        position: "bottom-right",
+      });
+      return;
+    }
+    setShowOTPDialog(true);
+  };
+
+  const handleVerifySuccess = () => {
+    setIsVerified(true);
+    toast.success("Phone number verified successfully!", {
+      position: "bottom-right",
+    });
+  };
+
+  const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isVerified) {
+      toast.error("Please verify your new phone number first", {
+        position: "bottom-right",
+      });
+      return;
+    }
+    toast.success("Phone number updated successfully!", {
+      position: "bottom-right",
+    });
+    setIsOpen(false);
+    setNewPhone("");
+    setIsVerified(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      setNewPhone("");
+      setIsVerified(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <form>
         <DialogTrigger asChild>
           <Button className="bg-linear-to-r from-green-500 to-green-600 text-white px-6 h-10 rounded-xl transition-all duration-300 hover:from-green-600 hover:to-green-700 hover:scale-105 shadow-md hover:shadow-lg">
@@ -68,15 +117,44 @@ export function ChangePhoneDialog() {
                 <Label htmlFor="new-phone" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <Phone className="w-4 h-4 text-green-500" />
                   New Phone Number
+                  {isVerified && (
+                    <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
+                  )}
                 </Label>
-                <Input
-                  id="new-phone"
-                  name="newPhone"
-                  type="tel"
-                  placeholder="Enter new phone number"
-                  className="h-12 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="new-phone"
+                    name="newPhone"
+                    type="tel"
+                    value={newPhone}
+                    onChange={(e) => {
+                      setNewPhone(e.target.value);
+                      setIsVerified(false);
+                    }}
+                    disabled={isVerified}
+                    placeholder="Enter new phone number"
+                    className="h-12 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300 disabled:opacity-60"
+                  />
+                  {!isVerified && (
+                    <Button
+                      type="button"
+                      onClick={handleVerifyClick}
+                      disabled={!newPhone || !/^[0-9]+$/.test(newPhone)}
+                      className="h-12 px-6 bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 whitespace-nowrap"
+                    >
+                      Verify
+                    </Button>
+                  )}
+                </div>
               </Field>
+
+              <OTPVerificationDialog
+                open={showOTPDialog}
+                onOpenChange={setShowOTPDialog}
+                type="phone"
+                value={newPhone}
+                onVerifySuccess={handleVerifySuccess}
+              />
 
               {/* Info box */}
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-2">
@@ -109,9 +187,11 @@ export function ChangePhoneDialog() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button 
-              type="submit" 
-              className="flex-1 h-12 rounded-xl bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            <Button
+              type="submit"
+              onClick={handleUpdate}
+              disabled={!isVerified}
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
               Update Phone
