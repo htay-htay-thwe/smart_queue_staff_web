@@ -125,9 +125,9 @@ export function LoginForm() {
 
                 {/* Forgot Password */}
                 <div className="mt-4 text-right">
-                    <a href="#" className="text-sm text-[#157aa2] hover:text-[#1C7AA5] font-medium transition-colors duration-200">
+                    <Link href="/auth/loginPage/forgotPassword" className="text-sm text-[#157aa2] hover:text-[#1C7AA5] font-medium transition-colors duration-200">
                         Forgot password?
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Login Button */}

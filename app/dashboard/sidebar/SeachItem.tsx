@@ -8,7 +8,7 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group"
 import { Search } from "lucide-react";
-import { NotificationBell } from "../noti/NotificationBell";
+import { NotificationBell } from "../components/NotificationBell";
 
 export default function SearchItem() {
   return (
