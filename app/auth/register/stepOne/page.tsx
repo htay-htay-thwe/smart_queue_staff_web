@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { StepIndicator } from "../StepIndicator";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import ShopNameField from "./card/ShopNameField";
 import EmailField from "./card/EmailField";
 import PhoneNumberField from "./card/PhoneNumberField";
+import OTPVerificationDialog from "./card/OTPVerificationDialog";
 import Link from "next/link";
 
 
@@ -32,6 +34,11 @@ const formSchema = z.object({
 export default function StepOne() {
 
     const router = useRouter();
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+    const [showOTPDialog, setShowOTPDialog] = useState(false);
+    const [verificationType, setVerificationType] = useState<"email" | "phone">("email");
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -41,7 +48,45 @@ export default function StepOne() {
         },
     })
 
+    const handleVerifyEmail = () => {
+        setVerificationType("email");
+        setShowOTPDialog(true);
+    };
+
+    const handleVerifyPhone = () => {
+        setVerificationType("phone");
+        setShowOTPDialog(true);
+    };
+
+    const handleVerifySuccess = () => {
+        if (verificationType === "email") {
+            setIsEmailVerified(true);
+            toast.success("Email verified successfully!", {
+                position: "bottom-right",
+            });
+        } else {
+            setIsPhoneVerified(true);
+            toast.success("Phone number verified successfully!", {
+                position: "bottom-right",
+            });
+        }
+    };
+
     function onSubmit(data: z.infer<typeof formSchema>) {
+        if (!isEmailVerified) {
+            toast.error("Please verify your email address first", {
+                position: "bottom-right",
+            });
+            return;
+        }
+
+        if (!isPhoneVerified) {
+            toast.error("Please verify your phone number first", {
+                position: "bottom-right",
+            });
+            return;
+        }
+
         toast("You submitted the following values:", {
             description: (
                 <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
@@ -93,9 +138,25 @@ export default function StepOne() {
                     <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
                         <FieldGroup className="space-y-6">
                             <ShopNameField control={form.control} />
-                            <EmailField control={form.control} />
-                            <PhoneNumberField control={form.control} />
+                            <EmailField 
+                                control={form.control} 
+                                isVerified={isEmailVerified}
+                                onVerifyClick={handleVerifyEmail}
+                            />
+                            <PhoneNumberField 
+                                control={form.control}
+                                isVerified={isPhoneVerified}
+                                onVerifyClick={handleVerifyPhone}
+                            />
                         </FieldGroup>
+
+                        <OTPVerificationDialog
+                            open={showOTPDialog}
+                            onOpenChange={setShowOTPDialog}
+                            type={verificationType}
+                            value={verificationType === "email" ? form.watch("email") : form.watch("phoneNumber")}
+                            onVerifySuccess={handleVerifySuccess}
+                        />
 
                         <Field orientation="horizontal" className="mt-8 w-full">
                             <Button 
