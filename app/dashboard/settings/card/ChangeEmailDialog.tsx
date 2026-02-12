@@ -67,13 +67,13 @@ export function ChangeEmailDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <form>
-        <DialogTrigger asChild>
-          <Button className="bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 h-10 rounded-xl transition-all duration-300 hover:from-blue-600 hover:to-blue-700 hover:scale-105 shadow-md hover:shadow-lg">
-            Change
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 shadow-2xl">
+      <DialogTrigger asChild>
+        <Button className="bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 h-10 rounded-xl transition-all duration-300 hover:from-blue-600 hover:to-blue-700 hover:scale-105 shadow-md hover:shadow-lg">
+          Change
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 shadow-2xl">
+        <form>
           {/* Header with gradient background */}
           <div className="bg-linear-to-br from-blue-500 to-blue-600 p-8 text-white relative overflow-hidden">
             {/* Decorative circles */}
@@ -197,8 +197,8 @@ export function ChangeEmailDialog() {
               Update Email
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   )
 }

@@ -2,6 +2,7 @@ import AccountInformation from "./card/AccountInformation";
 import AddressBar from "./card/AddressBar";
 import Profile from "./card/Profile";
 import { Settings as SettingsIcon } from "lucide-react";
+import ShopInformation from "./card/ShopInformation";
 
 export default function Settings() {
   return (
@@ -13,19 +14,26 @@ export default function Settings() {
             <SettingsIcon className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Account Settings</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage your profile and account preferences</p>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Account Settings
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Manage your profile and account preferences
+            </p>
           </div>
         </div>
       </div>
       <div className="animate-fade-in-delay-1">
-        <Profile/>
+        <Profile />
       </div>
       <div className="animate-fade-in-delay-2">
-        <AccountInformation/>
+        <AccountInformation />
       </div>
       <div className="animate-fade-in-delay-3">
-        <AddressBar/>
+        <AddressBar />
+      </div>
+      <div className="animate-fade-in-delay-4">
+        <ShopInformation />
       </div>
     </div>
   );
