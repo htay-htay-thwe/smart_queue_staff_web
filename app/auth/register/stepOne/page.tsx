@@ -102,7 +102,7 @@ export default function StepOne() {
             } as React.CSSProperties,
         })
 
-         router.push("/auth/register/stepTwo");
+        router.push("/auth/register/stepTwo");
     }
 
     return (
@@ -112,7 +112,7 @@ export default function StepOne() {
                 {/* Back to Login Button */}
                 <div className="mb-6 animate-fade-in">
                     <Link href="/auth/loginPage">
-                        <Button 
+                        <Button
                             variant="outline"
                             className="flex items-center gap-2 text-[#157aa2] border-[#157aa2] hover:bg-[#157aa2] hover:text-white transition-all duration-300 hover:scale-105"
                         >
@@ -138,12 +138,12 @@ export default function StepOne() {
                     <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
                         <FieldGroup className="space-y-6">
                             <ShopNameField control={form.control} />
-                            <EmailField 
-                                control={form.control} 
+                            <EmailField
+                                control={form.control}
                                 isVerified={isEmailVerified}
                                 onVerifyClick={handleVerifyEmail}
                             />
-                            <PhoneNumberField 
+                            <PhoneNumberField
                                 control={form.control}
                                 isVerified={isPhoneVerified}
                                 onVerifyClick={handleVerifyPhone}
@@ -159,9 +159,9 @@ export default function StepOne() {
                         />
 
                         <Field orientation="horizontal" className="mt-8 w-full">
-                            <Button 
-                                type="submit" 
-                                form="form-rhf-demo" 
+                            <Button
+                                type="submit"
+                                form="form-rhf-demo"
                                 className="w-full h-14 flex items-center justify-center gap-2 rounded-xl
                                          bg-linear-to-r from-[#157aa2] to-[#1C7AA5]
                                          text-base font-semibold text-white
