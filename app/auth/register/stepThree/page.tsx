@@ -30,7 +30,7 @@ const formSchema = z
     {
       message: "* Please enter at least one table type",
       path: ["tableTwo"],
-    }
+    },
   );
 
 export default function StepThree() {
@@ -55,6 +55,7 @@ export default function StepThree() {
         { type: "6-seat", capacity: data.tableSix },
       ],
     };
+    console.log('payload',payload)
 
     toast.success("Registration Complete!", {
       description: (
