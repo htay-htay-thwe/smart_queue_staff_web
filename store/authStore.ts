@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
+
+const isDev = process.env.NODE_ENV === "development";
 
 type StepOne = {
   name: string;
@@ -42,32 +44,34 @@ const initialState: Pick<RegisterStore, "stepOne" | "stepTwo"> = {
 };
 
 export const useRegisterStore = create<RegisterStore>()(
-  persist(
-    (set) => ({
-      ...initialState,
+  (isDev ? devtools : (config: any) => config)(
+    persist(
+      (set) => ({
+        ...initialState,
 
-      setStepOne: (data) =>
-        set((state) => ({
-          stepOne: { ...state.stepOne, ...data },
-        })),
+        setStepOne: (data) =>
+          set((state) => ({
+            stepOne: { ...state.stepOne, ...data },
+          })),
 
-      setStepTwo: (data) =>
-        set((state) => ({
-          stepTwo: { ...state.stepTwo, ...data },
-        })),
+        setStepTwo: (data) =>
+          set((state) => ({
+            stepTwo: { ...state.stepTwo, ...data },
+          })),
 
-      reset: () => set(initialState),
-    }),
-    {
-      name: "register-storage",
-
-      partialize: (state) => ({
-        stepOne: state.stepOne,
-        stepTwo: {
-          fullAddress: state.stepTwo.fullAddress,
-          location: state.stepTwo.location,
-        },
+        reset: () => set(initialState),
       }),
-    },
+      {
+        name: "register-storage",
+
+        partialize: (state: RegisterStore) => ({
+          stepOne: state.stepOne,
+          stepTwo: {
+            fullAddress: state.stepTwo.fullAddress,
+            location: state.stepTwo.location,
+          },
+        }),
+      },
+    ),
   ),
 );

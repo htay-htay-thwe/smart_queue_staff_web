@@ -11,6 +11,7 @@ import z from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useRegisterStore } from "@/store/authStore";
 
 const formSchema = z.object({
     profileImage: z
@@ -26,6 +27,9 @@ const formSchema = z.object({
 
 export default function StepTwo() {
     const router = useRouter();
+    const setStepTwo = useRegisterStore((s) => s.setStepTwo)
+    const setStepOne = useRegisterStore((s) => s.setStepOne)
+    console.log(setStepOne);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -43,6 +47,7 @@ export default function StepTwo() {
             position: "bottom-right",
         })
 
+        setStepTwo(data);
         router.push("/auth/register/stepThree");
     }
 

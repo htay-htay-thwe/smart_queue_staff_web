@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Main from "@/asset/image/mainLogo.png"
+import Main from "@/asset/image/mainLogo.png";
 import { useEffect, useState } from "react";
-
+import { Toaster } from "sonner";
 
 const sentences = [
   "Smart queues make life easier.",
@@ -23,14 +23,13 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   const [text, setText] = useState(sentences[0]);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     // Mark as client-side mounted
     setIsClient(true);
-    
+
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * sentences.length);
       setText(sentences[randomIndex]);
@@ -40,7 +39,7 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="min-h-screen grid grid-cols-1 gap-10 md:grid-cols-2">
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 md:gap-10">
       <div className="hidden md:flex flex-col  items-center justify-center bg-[#e5f5f9] gap-4">
         <Image src={Main} alt="Logo" width={220} height={220} />
 
@@ -49,7 +48,8 @@ export default function AuthLayout({
         </p>
       </div>
 
-      {children}
+      <main> {children}</main>
+      <Toaster />
     </div>
   );
 }

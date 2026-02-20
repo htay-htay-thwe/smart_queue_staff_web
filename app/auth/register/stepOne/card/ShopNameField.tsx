@@ -12,7 +12,7 @@ interface ShopNameFieldProps {
 export default function ShopNameField({ control }: ShopNameFieldProps) {
   return (
     <Controller
-      name="shopName"
+      name="name"
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>

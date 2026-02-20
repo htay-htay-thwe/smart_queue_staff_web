@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, CheckCircle2, XCircle } from "lucide-react";
+import { useOtpSendToEmail, useOtpVerifyToEmail } from "@/hooks/useRegister";
 
 interface OTPVerificationDialogProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface OTPVerificationDialogProps {
   type: "email" | "phone";
   value: string;
   onVerifySuccess: () => void;
+  email: string;
 }
 
 export default function OTPVerificationDialog({
@@ -30,6 +32,7 @@ export default function OTPVerificationDialog({
   type,
   value,
   onVerifySuccess,
+  email,
 }: OTPVerificationDialogProps) {
   const [otp, setOtp] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -37,6 +40,7 @@ export default function OTPVerificationDialog({
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
+  const otpToEmail = useOtpSendToEmail();
   // Countdown timer
   useEffect(() => {
     if (open && timer > 0) {
@@ -59,11 +63,14 @@ export default function OTPVerificationDialog({
     }
   }, [open]);
 
+  const otpVerifyToEmail = useOtpVerifyToEmail();
+
   const handleVerify = async () => {
     if (otp.length !== 6) {
       setError("Please enter the complete 6-digit code");
       return;
     }
+    otpVerifyToEmail.mutate(email,otp)
 
     setIsVerifying(true);
     setError("");
@@ -88,7 +95,7 @@ export default function OTPVerificationDialog({
     setCanResend(false);
     setOtp("");
     setError("");
-    // Here you would trigger resend OTP API
+    otpToEmail.mutate(email);
   };
 
   return (
@@ -98,9 +105,7 @@ export default function OTPVerificationDialog({
           <div className="flex justify-center mb-4">
             <div
               className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                type === "email"
-                  ? "bg-blue-100"
-                  : "bg-green-100"
+                type === "email" ? "bg-blue-100" : "bg-green-100"
               }`}
             >
               {type === "email" ? (
@@ -150,11 +155,6 @@ export default function OTPVerificationDialog({
               <span>{error}</span>
             </div>
           )}
-
-          {/* Demo Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800 text-center">
-            <strong>Demo:</strong> Use code <strong>123456</strong> to verify
-          </div>
 
           {/* Timer / Resend */}
           <div className="text-center text-sm text-gray-600">

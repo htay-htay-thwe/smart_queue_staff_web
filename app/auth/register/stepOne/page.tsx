@@ -16,6 +16,9 @@ import PhoneNumberField from "./card/PhoneNumberField";
 import OTPVerificationDialog from "./card/OTPVerificationDialog";
 import Link from "next/link";
 import { useRegisterStore } from "@/store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { sendOtpToEmail } from "@/services/auth.service";
+import { useOtpSendToEmail } from "@/hooks/useRegister";
 
 const formSchema = z.object({
   email: z.string().min(1, "* required").email("* invalid email address"),
@@ -27,7 +30,7 @@ const formSchema = z.object({
 });
 
 export default function StepOne() {
-  const setStepOne = useRegisterStore((s) => s.setStepOne)
+  const setStepOne = useRegisterStore((s) => s.setStepOne);
   const router = useRouter();
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
@@ -45,8 +48,16 @@ export default function StepOne() {
     },
   });
 
-  const handleVerifyEmail = () => {
+  const otpToEmail = useOtpSendToEmail();
+
+  const handleVerifyEmail = async () => {
     setVerificationType("email");
+    const isValid = await form.trigger("email");
+
+    if (!isValid) return;
+
+    otpToEmail.mutate(form.getValues("email"));
+
     setShowOTPDialog(true);
   };
 
@@ -59,12 +70,18 @@ export default function StepOne() {
     if (verificationType === "email") {
       setIsEmailVerified(true);
       toast.success("Email verified successfully!", {
-        position: "bottom-right",
+        position: "top-right",
+        style: {
+          color: "green",
+        },
       });
     } else {
       setIsPhoneVerified(true);
       toast.success("Phone number verified successfully!", {
-        position: "bottom-right",
+        position: "top-right",
+        style: {
+          color: "green",
+        },
       });
     }
   };
@@ -72,32 +89,20 @@ export default function StepOne() {
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (!isEmailVerified) {
       toast.error("Please verify your email address first", {
-        position: "bottom-right",
+        position: "top-right",
+        style: {
+          color: "red",
+        },
       });
       return;
     }
 
     if (!isPhoneVerified) {
       toast.error("Please verify your phone number first", {
-        position: "bottom-right",
+        position: "top-right",
       });
       return;
     }
-
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    });
 
     setStepOne(data);
     router.push("/auth/register/stepTwo");
@@ -155,6 +160,7 @@ export default function StepOne() {
               open={showOTPDialog}
               onOpenChange={setShowOTPDialog}
               type={verificationType}
+              email={form.getValues("email")}
               value={
                 verificationType === "email"
                   ? form.watch("email")
