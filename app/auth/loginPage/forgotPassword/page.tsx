@@ -7,7 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Lock, Eye, EyeOff, CheckCircle2, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  Send,
+} from "lucide-react";
 import OTPVerificationDialog from "@/app/auth/register/stepOne/card/OTPVerificationDialog";
 import { toast } from "sonner";
 
@@ -30,14 +38,6 @@ export default function ForgotPassword() {
       return;
     }
     setShowOTPDialog(true);
-  };
-
-  const handleVerifySuccess = () => {
-    setIsEmailVerified(true);
-    setStep("reset");
-    toast.success("Email verified! Now set your new password", {
-      position: "bottom-right",
-    });
   };
 
   const handleResetPassword = (e: React.FormEvent) => {
@@ -68,7 +68,6 @@ export default function ForgotPassword() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-12">
         {/* Back to Login Button */}
@@ -107,7 +106,10 @@ export default function ForgotPassword() {
           {step === "email" && (
             <div className="space-y-6 animate-fade-in">
               <Field>
-                <Label htmlFor="email" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="email"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Mail className="w-4 h-4 text-[#157aa2]" />
                   Email Address
                   {isEmailVerified && (
@@ -140,26 +142,36 @@ export default function ForgotPassword() {
                 onOpenChange={setShowOTPDialog}
                 type="email"
                 value={email}
-                onVerifySuccess={handleVerifySuccess}
+                onVerified={() => {
+                  setIsEmailVerified(true);
+                }}
               />
             </div>
           )}
 
           {/* Step 2: Reset Password */}
           {step === "reset" && (
-            <form onSubmit={handleResetPassword} className="space-y-6 animate-fade-in-delay-1">
+            <form
+              onSubmit={handleResetPassword}
+              className="space-y-6 animate-fade-in-delay-1"
+            >
               {/* Email Display (Verified) */}
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <div>
-                  <p className="text-xs font-medium text-gray-600">Verified Email</p>
+                  <p className="text-xs font-medium text-gray-600">
+                    Verified Email
+                  </p>
                   <p className="text-sm font-semibold text-gray-900">{email}</p>
                 </div>
               </div>
 
               {/* New Password */}
               <Field>
-                <Label htmlFor="new-password" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="new-password"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Lock className="w-4 h-4 text-[#157aa2]" />
                   New Password
                 </Label>
@@ -179,14 +191,21 @@ export default function ForgotPassword() {
                     onClick={() => setShowNewPassword(!showNewPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#157aa2] transition-colors duration-200"
                   >
-                    {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showNewPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </Field>
 
               {/* Confirm Password */}
               <Field>
-                <Label htmlFor="confirm-password" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="confirm-password"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Lock className="w-4 h-4 text-[#157aa2]" />
                   Confirm Password
                 </Label>
@@ -206,21 +225,31 @@ export default function ForgotPassword() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#157aa2] transition-colors duration-200"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </Field>
 
               {/* Password Requirements */}
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Password Requirements:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-2">
+                  Password Requirements:
+                </p>
                 <ul className="text-xs text-gray-600 space-y-1">
                   <li className="flex items-center gap-2">
-                    <div className={`w-1.5 h-1.5 rounded-full ${newPassword.length >= 8 ? "bg-green-500" : "bg-gray-400"}`}></div>
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${newPassword.length >= 8 ? "bg-green-500" : "bg-gray-400"}`}
+                    ></div>
                     At least 8 characters
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className={`w-1.5 h-1.5 rounded-full ${newPassword === confirmPassword && newPassword ? "bg-green-500" : "bg-gray-400"}`}></div>
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${newPassword === confirmPassword && newPassword ? "bg-green-500" : "bg-gray-400"}`}
+                    ></div>
                     Passwords match
                   </li>
                 </ul>
@@ -229,7 +258,12 @@ export default function ForgotPassword() {
               {/* Reset Button */}
               <Button
                 type="submit"
-                disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || newPassword.length < 8}
+                disabled={
+                  !newPassword ||
+                  !confirmPassword ||
+                  newPassword !== confirmPassword ||
+                  newPassword.length < 8
+                }
                 className="w-full h-14 bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 shadow-lg hover:shadow-xl"
               >
                 Reset Password

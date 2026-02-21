@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -10,11 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Mail, Check, X, Sparkles, CheckCircle2 } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Mail, Check, X, Sparkles, CheckCircle2 } from "lucide-react";
 import OTPVerificationDialog from "@/app/auth/register/stepOne/card/OTPVerificationDialog";
 import { toast } from "sonner";
 
@@ -32,13 +32,6 @@ export function ChangeEmailDialog() {
       return;
     }
     setShowOTPDialog(true);
-  };
-
-  const handleVerifySuccess = () => {
-    setIsVerified(true);
-    toast.success("Email verified successfully!", {
-      position: "bottom-right",
-    });
   };
 
   const handleUpdate = (e: React.FormEvent) => {
@@ -79,7 +72,7 @@ export function ChangeEmailDialog() {
             {/* Decorative circles */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             <DialogHeader className="relative z-10">
               <div className="flex items-center justify-center mb-4 animate-fade-in">
                 <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
@@ -87,7 +80,9 @@ export function ChangeEmailDialog() {
                 </div>
               </div>
               <DialogTitle className="text-center">
-                <div className="text-2xl font-bold mb-2 animate-fade-in-delay-1">Change Email Address</div>
+                <div className="text-2xl font-bold mb-2 animate-fade-in-delay-1">
+                  Change Email Address
+                </div>
                 <p className="text-sm text-white/80 font-normal animate-fade-in-delay-2">
                   Update your email address for account communications
                 </p>
@@ -99,7 +94,10 @@ export function ChangeEmailDialog() {
           <div className="p-8 animate-fade-in-delay-3">
             <FieldGroup className="space-y-6">
               <Field>
-                <Label htmlFor="current-email" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="current-email"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Mail className="w-4 h-4 text-blue-500" />
                   Current Email
                 </Label>
@@ -114,7 +112,10 @@ export function ChangeEmailDialog() {
               </Field>
 
               <Field>
-                <Label htmlFor="new-email" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="new-email"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Mail className="w-4 h-4 text-blue-500" />
                   New Email Address
                   {isVerified && (
@@ -153,7 +154,9 @@ export function ChangeEmailDialog() {
                 onOpenChange={setShowOTPDialog}
                 type="email"
                 value={newEmail}
-                onVerifySuccess={handleVerifySuccess}
+                onVerified={() => {
+                  setIsVerified(true);
+                }}
               />
 
               {/* Info box */}
@@ -179,8 +182,8 @@ export function ChangeEmailDialog() {
           {/* Footer with buttons */}
           <DialogFooter className="px-8 pb-8 pt-0 gap-3">
             <DialogClose asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
               >
                 <X className="w-4 h-4" />
@@ -200,5 +203,5 @@ export function ChangeEmailDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -42,6 +42,9 @@ export default function TablesTypeCount({ control }: TablesTypeCountProps) {
                   {...field}
                   id={`form-${tableType.name}`}
                   type="number"
+                  onChange={(e) => {
+                    field.onChange(e);
+                  }}
                   min={0}
                   aria-invalid={fieldState.invalid}
                   placeholder="0"

@@ -1,53 +1,60 @@
+import { RegisterShopData, RegisterShopRequest } from "@/types/shop.api.types";
 import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+const isDev = process.env.NODE_ENV === "development";
 
-type ShopRegData = {
-  name: string;
-  fullAddress: string;
-  lat: string;
-  lng: string;
-  phoneNumber: number;
-  email: string;
-  password: string;
-  description: string;
-  shop_img: string;
-};
-
-type ShopStore = {
-  shop: ShopRegData;
-  setShop: (data: Partial<ShopRegData>) => void;
+type ShopRegisterStore = {
+  shop: RegisterShopData;
+  setShop: (data: Partial<RegisterShopData>) => void;
   reset: () => void;
 };
 
-export const useShopStore = create<ShopStore>((set) => ({
-  shop: {
-    name: "",
-    fullAddress: "",
-    lat: "",
-    lng: "",
-    phoneNumber: 0,
-    email: "",
-    password: "",
-    description: "",
-    shop_img: "",
+const initialShop: RegisterShopData = {
+  name: "",
+  email: "",
+  phoneNumber: "",
+  shopTypeId: "",
+  description: "",
+  tableTypes: [
+    { type: "2-seat", capacity: 0 },
+    { type: "4-seat", capacity: 0 },
+    { type: "6-seat", capacity: 0 },
+  ],
+  fullAddress: "",
+  location: {
+    lat: 0,
+    lng: 0,
   },
+  shop_img: "",
+  createdAt: "",
+  updatedAt: "",
+  _id: "",
+};
 
-  setShop: (data) =>
-    set((state) => ({
-      shop: { ...state.shop, ...data },
-    })),
+export const useShopStore = create<ShopRegisterStore>()(
+  (isDev ? devtools : (config: any) => config)(
+    persist(
+      (set) => ({
+        shop: initialShop,
 
-  reset: () =>
-    set({
-      shop: {
-        name: "",
-        fullAddress: "",
-        lat: "",
-        lng: "",
-        phoneNumber: 0,
-        email: "",
-        password: "",
-        description: "",
-        shop_img: "",
+        setShop: (data: Partial<RegisterShopData>) =>
+          set((state: { shop: RegisterShopData }) => ({
+            shop: { ...state.shop, ...data },
+          })),
+
+        reset: () =>
+          set({
+            shop: initialShop,
+          }),
+      }),
+      {
+        name: "shopData-storage",
+        partialize: (state: { shop: RegisterShopData }) => ({
+          shop: {
+            ...state.shop,
+          },
+        }),
       },
-    }),
-}));
+    ),
+  ),
+);

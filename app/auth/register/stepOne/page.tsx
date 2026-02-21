@@ -16,9 +16,11 @@ import PhoneNumberField from "./card/PhoneNumberField";
 import OTPVerificationDialog from "./card/OTPVerificationDialog";
 import Link from "next/link";
 import { useRegisterStore } from "@/store/authStore";
-import { useQuery } from "@tanstack/react-query";
-import { sendOtpToEmail } from "@/services/auth.service";
-import { useOtpSendToEmail } from "@/hooks/useRegister";
+import {
+  useOtpSendToEmail,
+  useOtpSendToPhoneNumber,
+} from "@/hooks/useRegister";
+import PasswordCreate from "./card/PasswordCreate";
 
 const formSchema = z.object({
   email: z.string().min(1, "* required").email("* invalid email address"),
@@ -27,10 +29,12 @@ const formSchema = z.object({
     .string()
     .min(1, "* required")
     .regex(/^[0-9]+$/, "* only numbers allowed"),
+  password: z.string().min(8, "* minimum 8 characters required"),
 });
 
 export default function StepOne() {
   const setStepOne = useRegisterStore((s) => s.setStepOne);
+  const stepOne = useRegisterStore((s) => s.stepOne);
   const router = useRouter();
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
@@ -42,13 +46,15 @@ export default function StepOne() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      name: "",
-      phoneNumber: "",
+      email: stepOne.email,
+      name: stepOne.name,
+      phoneNumber: stepOne.phoneNumber,
+      password: stepOne.password,
     },
   });
 
   const otpToEmail = useOtpSendToEmail();
+  const otpToPhoneNumber = useOtpSendToPhoneNumber();
 
   const handleVerifyEmail = async () => {
     setVerificationType("email");
@@ -61,29 +67,15 @@ export default function StepOne() {
     setShowOTPDialog(true);
   };
 
-  const handleVerifyPhone = () => {
+  const handleVerifyPhone = async () => {
     setVerificationType("phone");
-    setShowOTPDialog(true);
-  };
+    const isValid = await form.trigger("phoneNumber");
 
-  const handleVerifySuccess = () => {
-    if (verificationType === "email") {
-      setIsEmailVerified(true);
-      toast.success("Email verified successfully!", {
-        position: "top-right",
-        style: {
-          color: "green",
-        },
-      });
-    } else {
-      setIsPhoneVerified(true);
-      toast.success("Phone number verified successfully!", {
-        position: "top-right",
-        style: {
-          color: "green",
-        },
-      });
-    }
+    if (!isValid) return;
+
+    otpToPhoneNumber.mutate(form.getValues("phoneNumber"));
+
+    setShowOTPDialog(true);
   };
 
   function onSubmit(data: z.infer<typeof formSchema>) {
@@ -154,19 +146,25 @@ export default function StepOne() {
                 isVerified={isPhoneVerified}
                 onVerifyClick={handleVerifyPhone}
               />
+              <PasswordCreate control={form.control} />
             </FieldGroup>
 
             <OTPVerificationDialog
               open={showOTPDialog}
               onOpenChange={setShowOTPDialog}
               type={verificationType}
-              email={form.getValues("email")}
               value={
                 verificationType === "email"
                   ? form.watch("email")
                   : form.watch("phoneNumber")
               }
-              onVerifySuccess={handleVerifySuccess}
+              onVerified={() => {
+                if (verificationType === "email") {
+                  setIsEmailVerified(true);
+                } else {
+                  setIsPhoneVerified(true);
+                }
+              }}
             />
 
             <Field orientation="horizontal" className="mt-8 w-full">

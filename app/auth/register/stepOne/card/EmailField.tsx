@@ -34,6 +34,9 @@ export default function EmailField({ control, isVerified, onVerifyClick }: Email
           <div className="flex gap-2">
             <Input
               {...field}
+              onChange={(e) => {
+                field.onChange(e);
+              }}
               id="form-rhf-demo-email"
               type="email"
               aria-invalid={fieldState.invalid}

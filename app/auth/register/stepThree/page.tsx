@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { CheckCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import ShopTypeSelect from "./card/ShopTypeSelect";
 import DescriptionField from "./card/DescriptionField";
 import TablesTypeCount from "./card/TablesTypeCount";
+import { useRegisterStore } from "@/store/authStore";
+import { useRegisterShop } from "@/hooks/useRegister";
+import { RegisterShopRequest } from "@/types/shop.api.types";
+import { useRouter } from "next/navigation";
+import { Loading } from "@/components/ui/loading";
 
 const formSchema = z
   .object({
@@ -34,17 +37,24 @@ const formSchema = z
   );
 
 export default function StepThree() {
+  const setStepThree = useRegisterStore((state) => state.setStepThree);
+  const stepOneData = useRegisterStore((state) => state.stepOne);
+  const stepTwoData = useRegisterStore((state) => state.stepTwo);
+  console.log("step two data", stepTwoData);
+  const stepThreeData = useRegisterStore((state) => state.stepThree);
+
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      shopType: "",
-      tableTwo: 0,
-      tableFour: 0,
-      tableSix: 0,
-      description: "",
+      shopType: stepThreeData.shopType,
+      tableTwo: stepThreeData.tableTwo,
+      tableFour: stepThreeData.tableFour,
+      tableSix: stepThreeData.tableSix,
+      description: stepThreeData.description,
     },
   });
+  const { mutate: registerShopMutation, isPending } = useRegisterShop(router);
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     const payload = {
@@ -55,31 +65,25 @@ export default function StepThree() {
         { type: "6-seat", capacity: data.tableSix },
       ],
     };
-    console.log('payload',payload)
+    setStepThree(payload);
 
-    toast.success("Registration Complete!", {
-      description: (
-        <div className="mt-2">
-          <p className="font-semibold">All steps completed successfully!</p>
-          <pre className="bg-code text-code-foreground mt-2 w-[340px] overflow-x-auto rounded-md p-4">
-            <code>{JSON.stringify(payload, null, 2)}</code>
-          </pre>
-        </div>
-      ),
-      position: "bottom-right",
-      duration: 5000,
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius) + 4px)",
-      } as React.CSSProperties,
-    });
-
-    // Redirect to dashboard after successful registration
-    setTimeout(() => {
-      router.push("/dashboard/dashboard");
-    }, 2000);
+    const registerData: RegisterShopRequest = {
+      name: stepOneData.name,
+      email: stepOneData.email,
+      phoneNumber: stepOneData.phoneNumber,
+      shopTypeId: stepThreeData.shopType,
+      description: data.description,
+      password: stepOneData.password,
+      tableTypes: [
+        { type: "2-seat", capacity: data.tableTwo },
+        { type: "4-seat", capacity: data.tableFour },
+        { type: "6-seat", capacity: data.tableSix },
+      ],
+      fullAddress: stepTwoData.fullAddress,
+      location: stepTwoData.location!,
+      shop_img: stepTwoData.shop_img!,
+    };
+    registerShopMutation(registerData);
   }
 
   return (
@@ -134,6 +138,8 @@ export default function StepThree() {
               </Button>
             </div>
           </form>
+
+          {isPending && <Loading />}
         </div>
 
         {/* Progress Text */}

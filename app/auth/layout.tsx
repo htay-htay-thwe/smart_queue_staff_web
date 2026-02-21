@@ -41,7 +41,15 @@ export default function AuthLayout({
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 md:gap-10">
       <div className="hidden md:flex flex-col  items-center justify-center bg-[#e5f5f9] gap-4">
-        <Image src={Main} alt="Logo" width={220} height={220} />
+        <div className="relative w-[220px] h-[220px]">
+          <Image
+            src={Main}
+            alt="Logo"
+            fill
+            sizes="160px"
+            className="object-contain"
+          />
+        </div>
 
         <p className="text-lg font-sans font-medium text-black text-center max-w-xs transition-opacity duration-500">
           {text}

@@ -12,15 +12,19 @@ interface PhoneNumberFieldProps {
   onVerifyClick: () => void;
 }
 
-export default function PhoneNumberField({ control, isVerified, onVerifyClick }: PhoneNumberFieldProps) {
+export default function PhoneNumberField({
+  control,
+  isVerified,
+  onVerifyClick,
+}: PhoneNumberFieldProps) {
   return (
     <Controller
       name="phoneNumber"
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel 
-            htmlFor="form-rhf-demo-phoneNumber" 
+          <FieldLabel
+            htmlFor="form-rhf-demo-phoneNumber"
             className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
           >
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
@@ -36,6 +40,9 @@ export default function PhoneNumberField({ control, isVerified, onVerifyClick }:
               {...field}
               id="form-rhf-demo-phoneNumber"
               type="tel"
+              onChange={(e) => {
+                field.onChange(e);
+              }}
               aria-invalid={fieldState.invalid}
               placeholder="09********"
               autoComplete="off"
@@ -56,7 +63,10 @@ export default function PhoneNumberField({ control, isVerified, onVerifyClick }:
             )}
           </div>
           {fieldState.invalid && (
-            <FieldError errors={[fieldState.error]} className="text-red-500 text-sm mt-1" />
+            <FieldError
+              errors={[fieldState.error]}
+              className="text-red-500 text-sm mt-1"
+            />
           )}
         </Field>
       )}

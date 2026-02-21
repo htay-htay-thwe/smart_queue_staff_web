@@ -15,15 +15,20 @@ import {
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, CheckCircle2, XCircle } from "lucide-react";
-import { useOtpSendToEmail, useOtpVerifyToEmail } from "@/hooks/useRegister";
+import {
+  useOtpSendToEmail,
+  useOtpSendToPhoneNumber,
+  useOtpVerifyToEmail,
+  useOtpVerifyToPhoneNumber,
+} from "@/hooks/useRegister";
+import { Loading } from "@/components/ui/loading";
 
 interface OTPVerificationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   type: "email" | "phone";
   value: string;
-  onVerifySuccess: () => void;
-  email: string;
+  onVerified: () => void;
 }
 
 export default function OTPVerificationDialog({
@@ -31,16 +36,26 @@ export default function OTPVerificationDialog({
   onOpenChange,
   type,
   value,
-  onVerifySuccess,
-  email,
+  onVerified,
 }: OTPVerificationDialogProps) {
   const [otp, setOtp] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
-  const otpToEmail = useOtpSendToEmail();
+  // Email
+  const { mutate: otpVerifyToEmail, isPending: isVerifying } =
+    useOtpVerifyToEmail();
+  const { mutate: otpToEmail, isPending: isSending } = useOtpSendToEmail();
+
+  // Phone Number
+  const { mutate: otpVerifyToPhoneNumber, isPending: isVerifyingPhone } =
+    useOtpVerifyToPhoneNumber();
+  const { mutate: otpToPhoneNumber, isPending: isSendingPhone } =
+    useOtpSendToPhoneNumber();
+
+  const isLoading =
+    isVerifying || isSending || isVerifyingPhone || isSendingPhone;
   // Countdown timer
   useEffect(() => {
     if (open && timer > 0) {
@@ -63,31 +78,19 @@ export default function OTPVerificationDialog({
     }
   }, [open]);
 
-  const otpVerifyToEmail = useOtpVerifyToEmail();
-
   const handleVerify = async () => {
     if (otp.length !== 6) {
       setError("Please enter the complete 6-digit code");
       return;
     }
-    otpVerifyToEmail.mutate(email,otp)
-
-    setIsVerifying(true);
-    setError("");
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // For demo: correct OTP is "123456"
-    if (otp === "123456") {
-      onVerifySuccess();
-      onOpenChange(false);
+    if (type == "email") {
+      otpVerifyToEmail({ email: value, otp });
     } else {
-      setError("Invalid verification code. Please try again.");
-      setOtp("");
+      otpVerifyToPhoneNumber({ phoneNumber: value, otp });
     }
-
-    setIsVerifying(false);
+    setError("");
+    onVerified();
+    onOpenChange(!open);
   };
 
   const handleResend = async () => {
@@ -95,12 +98,16 @@ export default function OTPVerificationDialog({
     setCanResend(false);
     setOtp("");
     setError("");
-    otpToEmail.mutate(email);
+    if (type == "email") {
+      otpToEmail(value);
+    } else {
+      otpToPhoneNumber(value);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md ">
         <DialogHeader>
           <div className="flex justify-center mb-4">
             <div
@@ -188,6 +195,8 @@ export default function OTPVerificationDialog({
             )}
           </Button>
         </div>
+
+        {isLoading && <Loading />}
       </DialogContent>
     </Dialog>
   );

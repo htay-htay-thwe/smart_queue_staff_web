@@ -7,6 +7,7 @@ type StepOne = {
   name: string;
   phoneNumber: string;
   email: string;
+  password: string;
 };
 
 type Location = {
@@ -15,31 +16,49 @@ type Location = {
 };
 
 type StepTwo = {
-  profileImage: File | null;
+  shop_img: File | null;
   fullAddress: string;
   location: Location | null;
+};
+
+type StepThree = {
+  shopType: string;
+  tableTwo: number;
+  tableFour: number;
+  tableSix: number;
+  description: string;
 };
 
 type RegisterStore = {
   stepOne: StepOne;
   stepTwo: StepTwo;
+  stepThree: StepThree;
 
   setStepOne: (data: Partial<StepOne>) => void;
   setStepTwo: (data: Partial<StepTwo>) => void;
+  setStepThree: (data: Partial<StepThree>) => void;
 
   reset: () => void;
 };
 
-const initialState: Pick<RegisterStore, "stepOne" | "stepTwo"> = {
+const initialState: Pick<RegisterStore, "stepOne" | "stepTwo" | "stepThree"> = {
   stepOne: {
     name: "",
     email: "",
     phoneNumber: "",
+    password: "",
   },
   stepTwo: {
-    fullAddress: "",
+    fullAddress: "hhhh",
     location: null,
-    profileImage: null,
+    shop_img: null,
+  },
+  stepThree: {
+    shopType: "",
+    tableTwo: 0,
+    tableFour: 0,
+    tableSix: 0,
+    description: "",
   },
 };
 
@@ -59,6 +78,11 @@ export const useRegisterStore = create<RegisterStore>()(
             stepTwo: { ...state.stepTwo, ...data },
           })),
 
+        setStepThree: (data) =>
+          set((state) => ({
+            stepThree: { ...state.stepThree, ...data },
+          })),
+
         reset: () => set(initialState),
       }),
       {
@@ -70,6 +94,7 @@ export const useRegisterStore = create<RegisterStore>()(
             fullAddress: state.stepTwo.fullAddress,
             location: state.stepTwo.location,
           },
+          stepThree: state.stepThree,
         }),
       },
     ),

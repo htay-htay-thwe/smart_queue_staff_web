@@ -16,8 +16,8 @@ export default function ShopNameField({ control }: ShopNameFieldProps) {
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel 
-            htmlFor="form-rhf-demo-shopName" 
+          <FieldLabel
+            htmlFor="form-rhf-demo-shopName"
             className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
           >
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
@@ -28,6 +28,9 @@ export default function ShopNameField({ control }: ShopNameFieldProps) {
           <Input
             {...field}
             id="form-rhf-demo-shopName"
+            onChange={(e) => {
+              field.onChange(e);
+            }}
             aria-invalid={fieldState.invalid}
             placeholder="Enter your shop name"
             autoComplete="off"
@@ -36,7 +39,10 @@ export default function ShopNameField({ control }: ShopNameFieldProps) {
                      transition-all duration-300 hover:border-gray-300"
           />
           {fieldState.invalid && (
-            <FieldError errors={[fieldState.error]} className="text-red-500 text-sm mt-1" />
+            <FieldError
+              errors={[fieldState.error]}
+              className="text-red-500 text-sm mt-1"
+            />
           )}
         </Field>
       )}
