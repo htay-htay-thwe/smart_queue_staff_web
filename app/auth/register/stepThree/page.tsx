@@ -13,7 +13,7 @@ import DescriptionField from "./card/DescriptionField";
 import TablesTypeCount from "./card/TablesTypeCount";
 import { useRegisterStore } from "@/store/authStore";
 import { useRegisterShop } from "@/hooks/useRegister";
-import { RegisterShopRequest } from "@/types/shop.api.types";
+import { RegisterShopRequest } from "@/types/shopQueue.api.types";
 import { useRouter } from "next/navigation";
 import { Loading } from "@/components/ui/loading";
 

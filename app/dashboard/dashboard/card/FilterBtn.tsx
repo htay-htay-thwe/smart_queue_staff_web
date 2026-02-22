@@ -11,7 +11,12 @@ import {
 import { StatusDot } from "@/components/ui/StatusDot";
 import { Clock, SlidersHorizontal } from "lucide-react";
 
-export default function FilterBtn() {
+type FilterBtnProps = {
+  setStatusFilter: (status: string | null) => void;
+  setTimeSort: (sort: "earliest" | "latest" | null) => void;
+};
+
+export default function FilterBtn({ setStatusFilter, setTimeSort }: FilterBtnProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -22,32 +27,50 @@ export default function FilterBtn() {
       </DropdownMenuTrigger>
       <DropdownMenuContent >
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+           <DropdownMenuItem onClick={() => setStatusFilter(null)}>
             <div className="flex">
-              <div className="mt-1 mr-2">
-                <StatusDot status="pending" />
-              </div>
-              <div className="text-muted-foreground">Pending</div>
+              {/* <div className="mt-1 mr-2">
+                <StatusDot status="waiting" />
+              </div> */}
+              <div className="text-muted-foreground">All Statuses</div>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setStatusFilter('waiting')}>
             <div className="flex">
               <div className="mt-1 mr-2">
-                <StatusDot status="accepted" />
-              </div>
-              <div className="text-muted-foreground">Queued</div>
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <div className="flex">
-              <div className="mt-1 mr-2">
-                <StatusDot status="canceled" />
+                <StatusDot status="waiting" />
               </div>
               <div className="text-muted-foreground">Waiting</div>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem><Clock size={28} strokeWidth={0.75} />Earliest Time </DropdownMenuItem>{" "}
-          <DropdownMenuItem><Clock size={28} strokeWidth={0.75} />Latest Time </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setStatusFilter('ready to seat')}>
+            <div className="flex">
+              <div className="mt-1 mr-2">
+                <StatusDot status="ready to seat" />
+              </div>
+              <div className="text-muted-foreground">Ready to Seat</div>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setStatusFilter('canceled')}>
+            <div className="flex">
+              <div className="mt-1 mr-2">
+                <StatusDot status="canceled" />
+              </div>
+              <div className="text-muted-foreground">Canceled</div>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTimeSort("earliest")}>
+            <div className="flex">
+              <Clock size={28} strokeWidth={0.75} />
+              <div className="ml-2 text-muted-foreground">Earliest Time</div>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTimeSort("latest")}>
+            <div className="flex">
+              <Clock size={28} strokeWidth={0.75} />
+              <div className="ml-2 text-muted-foreground">Latest Time</div>
+            </div>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

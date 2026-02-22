@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import SmartQLogo from "@/asset/image/Logo.png";
 import V from "@/asset/image/v.png";
+import { Button } from "@/components/ui/button";
+import { shopLogOut } from "@/services/auth.service";
 
 const menuItems = [
   { href: "/dashboard/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -44,6 +46,7 @@ export default function AppSideBar() {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const router = require("next/navigation").useRouter();
 
   return (
     <Sidebar collapsible="icon" className="bg-[#157AA2] border-r-0">
@@ -83,10 +86,11 @@ export default function AppSideBar() {
                           <SidebarMenuButton
                             asChild
                             className={`
-                                ${isActive
-                                ? "bg-black/30 border-l-4 border-white"
-                                : "border-l-4 border-transparent"
-                              }                                     
+                                ${
+                                  isActive
+                                    ? "bg-black/30 border-l-4 border-white"
+                                    : "border-l-4 border-transparent"
+                                }                                     
                               text-white hover:bg-black/20 hover:text-white 
                               ${isCollapsed ? "h-20 w-28 justify-center" : "h-12"} 
                               rounded-lg font-medium 
@@ -141,19 +145,24 @@ export default function AppSideBar() {
                       hover:text-white rounded-lg font-medium 
                       cursor-pointer transition-all duration-200 
                       active:opacity-70 active:scale-95
-                      ${isCollapsed
-                        ? "h-20 w-28 mx-auto justify-center"
-                        : "h-12 justify-center"
+                      ${
+                        isCollapsed
+                          ? "h-20 w-28 mx-auto justify-center"
+                          : "h-12 justify-center"
                       }
                     `}
                   >
-                    <Link 
-                      href="/auth/loginPage"
-                      className="flex items-center gap-3"
+                    <div
+                      onClick={() => {
+                        shopLogOut(router)();
+                      }}
+                      className="flex items-center gap-3 cursor-pointer"
                     >
-                      <LogOut className={isCollapsed ? "!h-6 !w-6" : "h-5 w-5"} />
+                      <LogOut
+                        className={isCollapsed ? "!h-6 !w-6" : "h-5 w-5"}
+                      />
                       {!isCollapsed && <span>Logout</span>}
-                    </Link>
+                    </div>
                   </SidebarMenuButton>
                 </TooltipTrigger>
                 {isCollapsed && (

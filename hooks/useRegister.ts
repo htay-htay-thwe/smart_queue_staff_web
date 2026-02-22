@@ -1,7 +1,8 @@
 "use client";
-import { setAuthCookie } from "@/lib/cookies";
+import { clearAuthCookie, setAuthCookie } from "@/lib/cookies";
 import {
   fetchShopTypes,
+  loginShop,
   registerShop,
   sendOtpToEmail,
   sendOtpToPhoneNumber,
@@ -12,7 +13,6 @@ import { useRegisterStore } from "@/store/authStore";
 import { useShopStore } from "@/store/shopStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { NextRouter } from "next/router";
 import { toast } from "sonner";
 
 export const useOtpSendToPhoneNumber = () => {
@@ -135,6 +135,31 @@ export const useRegisterShop = (router: ReturnType<typeof useRouter>) => {
 
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to register shop", {
+        position: "top-right",
+        style: {
+          color: "red",
+        },
+      });
+    },
+  });
+};
+
+export const useLoginShop = (router: ReturnType<typeof useRouter>) => {
+  return useMutation({
+    mutationFn: loginShop,
+    onSuccess: (data) => {
+      toast.success("Logged in successfully!", {
+        position: "top-right",
+        style: {
+          color: "green",
+        },
+      });
+      useShopStore.getState().setShop(data.data.shop);
+      setAuthCookie(data.data.token);
+      router.push("/dashboard/dashboard");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to log in", {
         position: "top-right",
         style: {
           color: "red",

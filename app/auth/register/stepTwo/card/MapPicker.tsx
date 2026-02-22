@@ -10,6 +10,7 @@ type Props = {
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
 // Fix marker icon issue in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -37,7 +38,7 @@ export default function MapPicker({ location, setLocation }: Props) {
         } catch (err) {
           fullAddress = "";
         }
-        setLocation({ lat, lng, fullAddress });
+        setLocation({ lat, lng, fullAddress }); 
       },
     });
 

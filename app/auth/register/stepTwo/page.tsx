@@ -13,6 +13,7 @@ import ProfileImageUpload from "./card/ProfileImageUpload";
 import dynamic from "next/dynamic";
 const MapPicker = dynamic(() => import("./card/MapPicker"), { ssr: false });
 import { useEffect, useState } from "react";
+import { Marker } from "react-leaflet";
 
 const formSchema = z.object({
   shop_img: z
@@ -34,11 +35,16 @@ const formSchema = z.object({
 });
 
 export default function StepTwo() {
-  const router = useRouter();
-  const [location, setLocation] = useState<any>(null);
-  const setStepTwo = useRegisterStore((s) => s.setStepTwo);
   const stepTwo = useRegisterStore((s) => s.stepTwo);
-  console.log('stepTwo:', stepTwo);
+  const setStepTwo = useRegisterStore((s) => s.setStepTwo);
+
+  const router = useRouter();
+  const [location, setLocation] = useState<any>(
+    stepTwo?.location
+      ? { ...stepTwo.location, fullAddress: stepTwo.fullAddress }
+      : null,
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,28 +57,42 @@ export default function StepTwo() {
     },
   });
 
-   useEffect(() => {
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          fullAddress: stepTwo?.fullAddress || "",
-        });
-      },
-      (error) => {
-        console.log(error);
+  useEffect(() => {
+    if (!location && !stepTwo?.location) {
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return;
       }
-    );
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const newLocation = {
+            lat,
+            lng,
+            fullAddress: "",
+          };
+          setLocation(newLocation);
+          form.setValue("location", { lat, lng });
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+    }
   }, []);
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    setStepTwo(data);
+    // Ensure form values are updated with latest location
+    const updatedData = {
+      ...data,
+      location: {
+        lat: location?.lat || 0,
+        lng: location?.lng || 0,
+      },
+      fullAddress: location?.fullAddress || "",
+    };
+    setStepTwo(updatedData);
     router.push("/auth/register/stepThree");
   }
 
@@ -101,7 +121,14 @@ export default function StepTwo() {
 
             <div className="border-t border-gray-200 my-8"></div>
 
-            <MapPicker location={location} setLocation={setLocation} />
+            <MapPicker
+              location={location}
+              setLocation={(loc) => {
+                setLocation(loc);
+                form.setValue("location", { lat: loc.lat, lng: loc.lng });
+                form.setValue("fullAddress", loc.fullAddress || "");
+              }}
+            />
 
             {location && (
               <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-700">

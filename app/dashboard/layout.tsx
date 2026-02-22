@@ -19,10 +19,7 @@ export default function DashboardLayout({
         </div>
 
         <div className="relative min-h-[calc(100vh-64px)]">
-          <div className="pb-20">
-            {children}
-          </div>
-
+          <div className="pb-20">{children}</div>
 
           {/* Footer */}
           <div className="absolute  bottom-0 left-0 right-0 flex items-center justify-center p-10 text-sm text-muted-foreground">
@@ -34,7 +31,6 @@ export default function DashboardLayout({
           </div>
         </div>
       </main>
-
     </SidebarProvider>
   );
 }

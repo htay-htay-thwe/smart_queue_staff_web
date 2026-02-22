@@ -3,11 +3,42 @@
 import { Button } from "@/components/ui/button";
 import SeatScroll from "./card/SeatScroll";
 import { ArrowLeft, Armchair } from "lucide-react";
+import { useState } from "react";
+import { useAssignTable, useFetchQueue } from "@/hooks/useQueue";
+import { Loading } from "@/components/ui/loading";
+import { useShopStore } from "@/store/shopStore";
 
 export default function SeatPlace() {
+  const [selected, setSelected] = useState<{ id: string; table_type_id: string } | null>(null);
+  const { mutate: assignTableMutate, isPending } = useAssignTable();
+  const shopData = useShopStore((s) => s.shop);
+  const queueUserData = useFetchQueue(shopData._id);
+
+  const assignTable = () => {
+    console.log("Attempting to assign table");
+    if (!selected || !queueUserData.data?.length) return;
+    const queue_id = queueUserData.data[0]._id;
+    const { table_type_id, id } = selected;
+    const table_no = id;
+    console.log('Assign payload:', {
+      queue_id,
+      table_type_id,
+      shop_id: shopData._id,
+      table_no,
+    });
+    assignTableMutate({
+      queue_id,
+      table_type_id,
+      shop_id: shopData._id,
+      table_no,
+    });
+  };
   return (
     <div className="p-6 min-h-screen">
-      <div onClick={() => window.history.back()} className="flex gap-3 hover:text-gray-500 mb-5 cursor-pointer transition-all duration-300 hover:gap-4 animate-fade-in">
+      <div
+        onClick={() => window.history.back()}
+        className="flex gap-3 hover:text-gray-500 mb-5 cursor-pointer transition-all duration-300 hover:gap-4 animate-fade-in"
+      >
         <ArrowLeft />
         <div>Back</div>
       </div>
@@ -19,8 +50,12 @@ export default function SeatPlace() {
             <Armchair className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Seat Assignment</h1>
-            <p className="text-sm text-gray-500 mt-1">Select and assign seats to customers</p>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Seat Assignment
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Select and assign seats to customers
+            </p>
           </div>
         </div>
       </div>
@@ -34,7 +69,9 @@ export default function SeatPlace() {
               <span className="text-gray-700 font-bold text-xl">#</span>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Queue Number</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                Queue Number
+              </p>
               <p className="text-2xl font-bold text-gray-900">A1000</p>
             </div>
           </div>
@@ -48,7 +85,9 @@ export default function SeatPlace() {
               <span className="text-gray-700 font-bold text-xl">👤</span>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Customer Name</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                Customer Name
+              </p>
               <p className="text-2xl font-bold text-gray-900">Htay Thwe</p>
             </div>
           </div>
@@ -62,13 +101,14 @@ export default function SeatPlace() {
               <Armchair className="w-6 h-6 text-gray-700" />
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Selected Seat</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                Selected Seat
+              </p>
               <p className="text-2xl font-bold text-gray-900">A12</p>
             </div>
           </div>
         </div>
       </div>
-
 
       {/* Header Bar with Legend and Assign Button */}
       <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 mb-6 shadow-md animate-fade-in-delay-3">
@@ -77,35 +117,51 @@ export default function SeatPlace() {
             <h2 className="text-xl font-bold text-gray-800 mb-2">
               Restaurant Seating Layout
             </h2>
-            <p className="text-sm text-gray-500">Click on any available table to select</p>
+            <p className="text-sm text-gray-500">
+              Click on any available table to select
+            </p>
           </div>
 
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
               <div className="w-4 h-4 rounded-md bg-gray-300 border border-gray-400" />
-              <span className="text-gray-700 text-sm font-medium">Available</span>
+              <span className="text-gray-700 text-sm font-medium">
+                Available
+              </span>
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
               <div className="w-4 h-4 rounded-md bg-gray-400 border border-gray-500" />
-              <span className="text-gray-700 text-sm font-medium">Occupied</span>
+              <span className="text-gray-700 text-sm font-medium">
+                Occupied
+              </span>
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 bg-purple-50 rounded-lg">
               <div className="w-4 h-4 rounded-md bg-purple-500 border border-purple-600" />
-              <span className="text-purple-700 text-sm font-medium">Selected</span>
+              <span className="text-purple-700 text-sm font-medium">
+                Selected
+              </span>
             </div>
           </div>
 
-          <Button className="bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] px-8 py-3 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <Button
+            className="bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] px-8 py-3 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            onClick={assignTable}
+          >
             Assign Seat
           </Button>
         </div>
       </div>
 
+      <SeatScroll
+        shopData={shopData}
+        setSelected={setSelected}
+        selected={selected}
+      />
 
-      <SeatScroll />
+      {isPending && <Loading />}
     </div>
   );
 }

@@ -1,34 +1,42 @@
-import { RegisterShopData, RegisterShopRequest } from "@/types/shop.api.types";
+import { ShopData } from "@/types/shopQueue.api.types";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 const isDev = process.env.NODE_ENV === "development";
 
 type ShopRegisterStore = {
-  shop: RegisterShopData;
-  setShop: (data: Partial<RegisterShopData>) => void;
+  shop: ShopData;
+  setShop: (data: Partial<ShopData>) => void;
   reset: () => void;
 };
 
-const initialShop: RegisterShopData = {
+const initialShop: ShopData = {
+  _id: "",
   name: "",
-  email: "",
   phoneNumber: "",
-  shopTypeId: "",
+  email: "",
+  shopImg: "",
   description: "",
-  tableTypes: [
-    { type: "2-seat", capacity: 0 },
-    { type: "4-seat", capacity: 0 },
-    { type: "6-seat", capacity: 0 },
-  ],
-  fullAddress: "",
-  location: {
-    lat: 0,
-    lng: 0,
+  address: {
+    location: {
+      type: "Point",
+      coordinates: [0, 0],
+    },
+    fullAddress: "",
+    _id: "",
   },
-  shop_img: "",
+  shopTypes: {
+    _id: "",
+    shopTypeName: "",
+    __v: 0,
+  },
+  tableTypes: [
+    { _id: "", type: "2-seat", capacity: 0, shopId: "", __v: 0 },
+    { _id: "", type: "4-seat", capacity: 0, shopId: "", __v: 0 },
+    { _id: "", type: "6-seat", capacity: 0, shopId: "", __v: 0 },
+  ],
   createdAt: "",
   updatedAt: "",
-  _id: "",
+  __v: 0,
 };
 
 export const useShopStore = create<ShopRegisterStore>()(
@@ -37,8 +45,8 @@ export const useShopStore = create<ShopRegisterStore>()(
       (set) => ({
         shop: initialShop,
 
-        setShop: (data: Partial<RegisterShopData>) =>
-          set((state: { shop: RegisterShopData }) => ({
+        setShop: (data: Partial<ShopData>) =>
+          set((state: { shop: ShopData }) => ({
             shop: { ...state.shop, ...data },
           })),
 
@@ -49,7 +57,7 @@ export const useShopStore = create<ShopRegisterStore>()(
       }),
       {
         name: "shopData-storage",
-        partialize: (state: { shop: RegisterShopData }) => ({
+        partialize: (state: { shop: ShopData }) => ({
           shop: {
             ...state.shop,
           },

@@ -1,3 +1,5 @@
+"use client";
+import { useShopStore } from "@/store/shopStore";
 import LiveTable from "./card/LiveTable";
 import MostQueueUser from "./card/MostQueueUser";
 import QueuePie from "./card/QueuePie";
@@ -5,6 +7,8 @@ import { QueueRecord } from "./statistics/QueueRecord";
 import { BarChart3 } from "lucide-react";
 
 export default function Dashboard() {
+  const userData = useShopStore((s) => s.shop);
+  console.log("Dashboard userData", userData);
   return (
     <div className="flex flex-col md:flex-row">
       <div className="p-6 bg-[#F8F7F1] min-h-screen lg:w-1/3 w-full">

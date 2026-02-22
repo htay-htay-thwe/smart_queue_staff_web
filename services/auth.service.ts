@@ -1,5 +1,9 @@
 import { api } from "@/lib/api";
-import { RegisterShopRequest } from "@/types/shop.api.types";
+import { clearAuthCookie } from "@/lib/cookies";
+import { useRegisterStore } from "@/store/authStore";
+import { useShopStore } from "@/store/shopStore";
+import {  RegisterShopRequest } from "@/types/shopQueue.api.types";
+import { useRouter } from "next/navigation";
 
 export const sendOtpToPhoneNumber = async (phoneNumber: string) => {
   const res = await api.post("/shops/send-phone-otp", { phoneNumber });
@@ -61,3 +65,24 @@ export const registerShop = async (data: RegisterShopRequest) => {
   const res = await api.post("/shops/register", formData);
   return res.data;
 };
+
+export const shopLogOut = (router: ReturnType<typeof useRouter>) => {
+  return async () => {
+    await clearAuthCookie();
+    useRegisterStore.getState().reset();
+    useShopStore.getState().reset();
+    router.push("/auth/loginPage");
+  };
+};
+
+export const loginShop = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const res = await api.post("/shops/login", { email, password });
+  return res.data;
+};
+

@@ -34,6 +34,7 @@ export default function ShopTypeSelect({ control }: ShopTypeSelectProps) {
               {...field}
               onChange={(e) => {
                 field.onChange(e);
+                console.log("hi", e.target.value);
               }}
               id="form-shopType"
               aria-invalid={fieldState.invalid}
@@ -42,6 +43,7 @@ export default function ShopTypeSelect({ control }: ShopTypeSelectProps) {
                        transition-all duration-300 hover:border-gray-300
                        bg-white appearance-none cursor-pointer
                        disabled:bg-gray-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
             >
               <option value="" disabled>
                 Select Shop Type
@@ -51,17 +53,16 @@ export default function ShopTypeSelect({ control }: ShopTypeSelectProps) {
                   {type.shopTypeName}
                 </option>
               ))}
-
-              {isLoading && (
-                <div className="absolute inset-0 bg-gray-200/70  flex items-center justify-center z-50 rounded-lg">
-                  <div className="flex flex-col items-center">
-                    <div className="w-24 h-24">
-                      <Lottie animationData={LoadingBlue} loop />
-                    </div>
+            </select>
+            {isLoading && (
+              <div className="absolute inset-0 bg-gray-200/70 flex items-center justify-center z-50 rounded-lg">
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24">
+                    <Lottie animationData={LoadingBlue} loop />
                   </div>
                 </div>
-              )}
-            </select>
+              </div>
+            )}
             <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
               <svg
                 className="w-5 h-5 text-gray-400"
