@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { StepIndicator } from "../StepIndicator";
-import LocationPicker from "./card/LocationPicker";
 import { ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useRegisterStore } from "@/store/authStore";
 import ProfileImageUpload from "./card/ProfileImageUpload";
-import { MapPicker } from "./card/MapPicker";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+const MapPicker = dynamic(() => import("./card/MapPicker"), { ssr: false });
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   shop_img: z
@@ -29,7 +28,7 @@ const formSchema = z.object({
       lng: z.number(),
     })
     .refine(
-      (loc) => loc.lat !== 16.8409 || loc.lng !== 96.1735,
+      (loc) => loc.lat !== 0 || loc.lng !== 0,
       "* Please select your location on the map",
     ),
 });
@@ -51,6 +50,26 @@ export default function StepTwo() {
       },
     },
   });
+
+   useEffect(() => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          fullAddress: stepTwo?.fullAddress || "",
+        });
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }, []);
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setStepTwo(data);
@@ -82,7 +101,7 @@ export default function StepTwo() {
 
             <div className="border-t border-gray-200 my-8"></div>
 
-            <MapPicker setLocation={setLocation} />
+            <MapPicker location={location} setLocation={setLocation} />
 
             {location && (
               <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-700">
@@ -100,9 +119,6 @@ export default function StepTwo() {
                 </p>
               </div>
             )}
-            {/* <LocationPicker control={form.control} /> */}
-
-            {/* Navigation Buttons */}
             <div className="flex gap-4 pt-6">
               <Link
                 href="/auth/register/stepOne"

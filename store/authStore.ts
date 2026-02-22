@@ -49,7 +49,7 @@ const initialState: Pick<RegisterStore, "stepOne" | "stepTwo" | "stepThree"> = {
     password: "",
   },
   stepTwo: {
-    fullAddress: "hhhh",
+    fullAddress: "",
     location: null,
     shop_img: null,
   },

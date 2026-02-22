@@ -1,12 +1,10 @@
 "use client";
 
-import { MapContainer, TileLayer, useMapEvents, Marker } from "react-leaflet";
+import {  useMapEvents, Marker } from "react-leaflet";
 import { useState } from "react";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useRegisterStore } from "@/store/authStore";
-
 // Fix marker icon issue in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -19,8 +17,7 @@ L.Icon.Default.mergeOptions({
 
 export const LocationMarker = ({ setLocation }: any) => {
   const [position, setPosition] = useState<any>(null);
-  const setStepTwo = useRegisterStore((state) => state.setStepTwo);
-
+const setStepTwo = useRegisterStore((s) => s.setStepTwo);
 
   useMapEvents({
     async click(e) {
@@ -40,6 +37,13 @@ export const LocationMarker = ({ setLocation }: any) => {
         lat,
         lng,
         postcode: address.postcode || "",
+        fullAddress: data.display_name,
+      });
+      setStepTwo({
+        location: {
+          lat,
+          lng,
+        },
         fullAddress: data.display_name,
       });
     },
