@@ -3,6 +3,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users, Check } from "lucide-react";
 import { ShopData } from "@/types/shopQueue.api.types";
+import { useFetchQueue, useOccupyTable } from "@/hooks/useQueue";
 
 type SeatScrollProps = {
   selected: { id: string; table_type_id: string } | null;
@@ -35,14 +36,16 @@ export default function SeatScroll({
         shopData.tableTypes.find((t) => t.type === "6-seat")?._id || "",
     },
   };
-
-  const occupiedSeats = new Set([
-    // "twoPeople-3",
-    // "twoPeople-7",
-    // "fourPeople-5",
-    // "fourPeople-12",
-    // "sixPeople-0",
-  ]);
+  console.log('tables data', data);
+  const tables = useOccupyTable(shopData._id);
+  const occupiedSeats = new Set<string>();
+  if (tables.data) {
+    tables.data.data.forEach((table: any) => {
+      if (table.isActive) {
+        occupiedSeats.add(`${table.table_no}`);
+      }
+    });
+  }
 
   const getSectionConfig = (key: string) => {
     if (key === "twoPeople") {

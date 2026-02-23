@@ -51,7 +51,7 @@ export interface ShopData {
   __v: number;
 }
 
-export type QueueStatus = "Ready to seat" | "waiting" | "canceled";
+export type QueueStatus = "Ready to seat" | "waiting" | "canceled" | "seated" | "finished" | "qr-scanned";
 
 export interface Customer {
   _id: string;

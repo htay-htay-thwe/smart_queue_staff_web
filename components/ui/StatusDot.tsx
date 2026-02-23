@@ -1,9 +1,13 @@
+import { stat } from "fs";
+
 export function StatusDot({ status }: { status: string }) {
   const color =
     status === "ready to seat"
       ? "bg-green-500"
       : status === "waiting"
-        ? "bg-blue-500"
+        ? "bg-blue-500" 
+        : status === "qr-scanned"
+        ? "bg-[#1E7A9B]"
         : "bg-red-500";
 
   return (

@@ -1,31 +1,78 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import SeatScroll from "./card/SeatScroll";
-import { ArrowLeft, Armchair } from "lucide-react";
-import { useState } from "react";
+import SeatScroll from "../card/SeatScroll";
+import { ArrowLeft, Armchair, QrCode } from "lucide-react";
+import { use, useState } from "react";
 import { useAssignTable, useFetchQueue } from "@/hooks/useQueue";
 import { Loading } from "@/components/ui/loading";
 import { useShopStore } from "@/store/shopStore";
+import { useParams } from "next/dist/client/components/navigation";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SeatPlace() {
-  const [selected, setSelected] = useState<{ id: string; table_type_id: string } | null>(null);
-  const { mutate: assignTableMutate, isPending } = useAssignTable();
+  const [selected, setSelected] = useState<{
+    id: string;
+    table_type_id: string;
+  } | null>(null);
+  const params = useParams();
+  const router = useRouter();
+  const { mutate: assignTableMutate, isPending } = useAssignTable(router);
   const shopData = useShopStore((s) => s.shop);
   const queueUserData = useFetchQueue(shopData._id);
+  const queueId = params.id as string;
+  const queueUser = queueUserData.data?.find((q) => q._id === queueId);
+  console.log("Queue user data:", queueUser);
+  const tableTypes = shopData.tableTypes;
+  console.log("Shop table types:", queueUser?.table_type_id, tableTypes);
+
+  // Clean seat type lookup function
+  function getSeatTypeLabel(table_type_id: string): string {
+    const typesRaw = queueUser?.shop_id?.tableTypes || shopData.tableTypes;
+    let types = shopData.tableTypes;
+    if (Array.isArray(typesRaw) && typeof typesRaw[0] === "object") {
+      types = typesRaw;
+    }
+    const tableType = types.find((t) => t._id === table_type_id);
+    if (!tableType) return "Unknown Table Type";
+    switch (tableType.type) {
+      case "2-seat":
+        return "2 People Seat";
+      case "4-seat":
+        return "4 People Seat";
+      case "6-seat":
+        return "6 People Seat";
+      default:
+        return tableType.type;
+    }
+  }
 
   const assignTable = () => {
-    console.log("Attempting to assign table");
-    if (!selected || !queueUserData.data?.length) return;
-    const queue_id = queueUserData.data[0]._id;
+    if (!queueUser?.queue_qr) {
+      toast.error("Please scan QR first.", {
+        position: "top-right",
+        style: {
+          color: "red",
+        },
+        description: "Customer must scan the QR code before assigning a seat.",
+      });
+      return;
+    }
+    if (!selected) {
+      toast.error("Please select a table.", {
+        position: "top-right",
+        style: {
+          color: "red",
+        },
+        description: "You must select a table before assigning a seat.",
+      });
+      return;
+    }
+    if (!queueUserData.data?.length) return;
+    const queue_id = queueId;
     const { table_type_id, id } = selected;
     const table_no = id;
-    console.log('Assign payload:', {
-      queue_id,
-      table_type_id,
-      shop_id: shopData._id,
-      table_no,
-    });
     assignTableMutate({
       queue_id,
       table_type_id,
@@ -33,6 +80,7 @@ export default function SeatPlace() {
       table_no,
     });
   };
+
   return (
     <div className="p-6 min-h-screen">
       <div
@@ -66,13 +114,18 @@ export default function SeatPlace() {
           {/* Queue Number */}
           <div className="flex items-center gap-4 flex-1">
             <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-700 font-bold text-xl">#</span>
+              {/* <span className="text-gray-700 font-bold text-xl">#</span> */}
+              <QrCode className="w-6 h-6 text-gray-700" />
             </div>
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                Queue Number
+                QR Number
               </p>
-              <p className="text-2xl font-bold text-gray-900">A1000</p>
+              <p
+                className={` font-bold ${queueUser?.queue_qr ? "text-gray-900 text-2xl" : "text-red-500 text-xl"}`}
+              >
+                {queueUser?.queue_qr || "Need to Scan Qr!"}
+              </p>
             </div>
           </div>
 
@@ -88,7 +141,12 @@ export default function SeatPlace() {
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                 Customer Name
               </p>
-              <p className="text-2xl font-bold text-gray-900">Htay Thwe</p>
+              <span className="text-2xl font-bold text-gray-900">
+                {queueUser?.customer_id.name}
+              </span>
+              <span className="ml-2 text-sm text-[#1E7A9B] font-medium">
+                ({getSeatTypeLabel(queueUser?.table_type_id || "")})
+              </span>
             </div>
           </div>
 
@@ -104,7 +162,11 @@ export default function SeatPlace() {
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                 Selected Seat
               </p>
-              <p className="text-2xl font-bold text-gray-900">A12</p>
+              <p
+                className={`text-2xl font-bold ${selected?.id ? "text-gray-900" : "text-red-500"}`}
+              >
+                {selected?.id || "None"}
+              </p>
             </div>
           </div>
         </div>

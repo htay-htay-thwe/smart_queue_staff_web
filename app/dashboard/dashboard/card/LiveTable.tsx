@@ -39,14 +39,16 @@ export default function LiveTable() {
   const pathname = usePathname();
   const shopData = useShopStore((s) => s.shop);
   const queueUserData = useFetchQueue(shopData._id);
-  const queueUsers = queueUserData.data || [];
+  const queueUsers =
+    queueUserData.data?.filter((q) => String(q?.status).toLowerCase() !== "seated") || [];
+  console.log("Fetched queue users:", queueUsers);
 
   const totalPages = Math.ceil(queueUsers.length / itemsPerPage);
   let paginatedQueueUsers = queueUsers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
-
+  console.log("Original queue users:", paginatedQueueUsers);
   if (statusFilter) {
     paginatedQueueUsers = paginatedQueueUsers.filter(
       (queue) => queue.status.toLowerCase() === statusFilter.toLowerCase(),
@@ -146,7 +148,7 @@ export default function LiveTable() {
                   </TableCell>
                   {pathname === "/dashboard/queue" && (
                     <TableCell className="text-center">
-                      <Link href="/dashboard/seat-Place">
+                      <Link href={`/dashboard/seat-Place/${queue._id}`}>
                         <Button className="bg-[#1c7aa5] transition-all duration-300 hover:bg-[#297a9f] hover:scale-105">
                           Assign Seat
                         </Button>

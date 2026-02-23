@@ -3,9 +3,10 @@ import { getAuthCookie } from "@/lib/cookies";
 import { Queue } from "@/types/shopQueue.api.types";
 
 export const getQueue = async (shopId: string): Promise<Queue[]> => {
+  console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();
   console.log("token", token);
-  const res = await api.get(`/queues/shop/${shopId}`, {
+  const res = await api.get(`queues/shop/${shopId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -25,6 +26,13 @@ export const assignTableToQueue = async ({
   table_no: string;
 }) => {
   const token = await getAuthCookie();
+  console.log("Assigning table ", {
+    queue_id,
+    table_type_id,
+    shop_id,
+    table_no,
+  });
+  console.log("Assigning table with token:", token);
   const res = await api.patch(
     `queues/assign-table`,
     { queue_id, table_type_id, shop_id, table_no },
@@ -32,6 +40,41 @@ export const assignTableToQueue = async ({
       headers: {
         Authorization: `Bearer ${token}`,
       },
+    },
+  );
+  return res.data;
+};
+
+export const occupyTable = async ({ shop_id }: { shop_id: string }) => {
+  const token = await getAuthCookie();
+  console.log("Occupying table with token:", token);
+  const res = await api.get(`queues/get-table-status/${shop_id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+export const releaseTableAndUpdateQueue = async ({
+  shop_id,
+  table_no,
+  table_type_id,
+}: {
+  shop_id: string;
+  table_no: string;
+  table_type_id: string;
+}) => {
+  console.log("Releasing table ", {
+    shop_id,
+    table_no,
+    table_type_id,
+  });
+  const token = await getAuthCookie();
+  console.log("Releasing table with token:", token);
+  const res = await api.patch(
+    `queues/free-table`,
+    { shop_id, table_no, table_type_id },
+    {
+      headers: { Authorization: `Bearer ${token}` },
     },
   );
   return res.data;

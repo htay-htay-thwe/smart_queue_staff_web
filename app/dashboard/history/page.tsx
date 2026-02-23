@@ -2,22 +2,36 @@
 
 import { useState, useMemo } from "react";
 import PaginationSeatAssign from "../queue/card/PaginationSeatAssign";
-import OneCard, { allData } from "./card/OneCard";
+import OneCard from "./card/OneCard";
 import { History, Filter } from "lucide-react";
+import { useFetchQueue } from "@/hooks/useQueue";
+import { useShopStore } from "@/store/shopStore";
 
 export default function Queue() {
   const [selectedFilter, setSelectedFilter] = useState("all");
 
+  const shopData = useShopStore((s) => s.shop);
+  console.log("shopData", shopData);
+  const queueUserData = useFetchQueue(shopData._id);
+  const queueHistories =
+    queueUserData.data?.filter(
+      (q) =>
+        String(q?.status).toLowerCase() == "seated" ||
+        String(q?.status).toLowerCase() == "finished",
+    ) || [];
+
   // Filter data based on selected date filter
   const filteredData = useMemo(() => {
-    const today = new Date(2026, 1, 9); // February 9, 2026
-    
+    const today = new Date();
+
     if (selectedFilter === "all") {
-      return allData;
+      return queueHistories;
     }
 
-    return allData.filter((item) => {
-      const [day, month, year] = item.date.split(".").map(Number);
+    console.log("Fetched queue histories:", queueHistories);
+
+    return queueHistories.filter((item) => {
+      const [day, month, year] = item.updatedAt.split(".").map(Number);
       const itemDate = new Date(year, month - 1, day);
       const diffTime = today.getTime() - itemDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -35,7 +49,7 @@ export default function Queue() {
           return true;
       }
     });
-  }, [selectedFilter]);
+  }, [selectedFilter, queueHistories]);
   return (
     <div className="p-6">
       {/* Modern Header */}
@@ -46,25 +60,31 @@ export default function Queue() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-800">Queue History</h1>
-            <p className="text-sm text-gray-500 mt-1">View all past queue records and customer visits</p>
+            <p className="text-sm text-gray-500 mt-1">
+              View all past queue records and customer visits
+            </p>
           </div>
         </div>
-        
+
         {/* Stats Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           <div className="bg-linear-to-br from-blue-50 to-blue-100/50 p-4 rounded-xl border-2 border-blue-200">
-            <div className="text-sm font-semibold text-gray-600">Total Records</div>
+            <div className="text-sm font-semibold text-gray-600">
+              Total Records
+            </div>
             <div className="text-2xl font-bold text-[#157aa2] mt-1">
-              {allData.length}
+              {queueHistories?.length}
             </div>
           </div>
           <div className="bg-linear-to-br from-green-50 to-green-100/50 p-4 rounded-xl border-2 border-green-200">
-            <div className="text-sm font-semibold text-gray-600">Filtered Results</div>
+            <div className="text-sm font-semibold text-gray-600">
+              Filtered Results
+            </div>
             <div className="text-2xl font-bold text-green-600 mt-1">
               {filteredData.length}
             </div>
           </div>
-          
+
           {/* Date Filter Dropdown */}
           <div className="bg-linear-to-br from-purple-50 to-purple-100/50 p-4 rounded-xl border-2 border-purple-200">
             <div className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
@@ -90,7 +110,11 @@ export default function Queue() {
         <OneCard data={filteredData} />
       </div>
       <div className="mt-6 animate-fade-in-delay-3">
-        <PaginationSeatAssign />
+        <PaginationSeatAssign
+          currentPage={1}
+          totalPages={5}
+          setCurrentPage={() => {}}
+        />
       </div>
     </div>
   );
