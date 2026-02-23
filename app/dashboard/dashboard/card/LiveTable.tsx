@@ -40,7 +40,9 @@ export default function LiveTable() {
   const shopData = useShopStore((s) => s.shop);
   const queueUserData = useFetchQueue(shopData._id);
   const queueUsers =
-    queueUserData.data?.filter((q) => String(q?.status).toLowerCase() !== "seated") || [];
+    queueUserData.data?.filter(
+      (q) => String(q?.status).toLowerCase() !== "seated",
+    ) || [];
   console.log("Fetched queue users:", queueUsers);
 
   const totalPages = Math.ceil(queueUsers.length / itemsPerPage);

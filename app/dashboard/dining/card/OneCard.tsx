@@ -26,10 +26,10 @@ interface OneCardProps {
 }
 
 export default function OneCard({ data }: OneCardProps) {
-  console.log("OneCard received data:", data);
+  console.log("OneCard received data:", data, Array.isArray(data));
   const router = useRouter();
   const { mutate: releaseTableMutate, isPending } = useReleaseTable(router);
-  if (data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -39,7 +39,7 @@ export default function OneCard({ data }: OneCardProps) {
           No Records Found
         </h3>
         <p className="text-gray-500 text-sm text-center max-w-md">
-          No queue history matches the selected date filter. Try selecting a
+          No Dining table matches the selected date filter. Try selecting a
           different time period.
         </p>
       </div>

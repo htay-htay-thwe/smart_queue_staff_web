@@ -1,31 +1,34 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import PaginationSeatAssign from "../queue/card/PaginationSeatAssign";
+import OneCard from "./card/OneCard";
 import { History, Filter } from "lucide-react";
+import { useFetchQueue } from "@/hooks/useQueue";
 import { useShopStore } from "@/store/shopStore";
-import { useFetchQueueHistory } from "@/services/queue.service";
-import HistoryCard from "./card/HistoryCard";
+import PaginationSeatAssign from "../queue/card/PaginationSeatAssign";
 
-export default function Queue() {
+export default function QueueDining() {
   const [selectedFilter, setSelectedFilter] = useState("all");
 
   const shopData = useShopStore((s) => s.shop);
-  console.log("shopData", shopData);
-  const queueUserData = useFetchQueueHistory(shopData._id);
+  const queueUserData = useFetchQueue(shopData._id);
+  console.log("Fetched queue data:", queueUserData.data);
+  const queueHistories =
+    queueUserData.data?.filter(
+      (q) => String(q?.status).toLowerCase() == "seated",
+    ) || [];
 
-  console.log("Fetched queue history data:", queueUserData.data);
-  // Filter data based on selected date filter
+  console.log("Filtered queue histories (seated/finished):", queueHistories);
   const filteredData = useMemo(() => {
     const today = new Date();
 
     if (selectedFilter === "all") {
-      return queueUserData.data || [];
+      return queueHistories;
     }
 
-    console.log("Fetched queue histories:", queueUserData.data);
+    console.log("Fetched queue histories:", queueHistories);
 
-    return (queueUserData.data || []).filter((item) => {
+    return queueHistories.filter((item) => {
       const [day, month, year] = item.updatedAt.split(".").map(Number);
       const itemDate = new Date(year, month - 1, day);
       const diffTime = today.getTime() - itemDate.getTime();
@@ -44,10 +47,10 @@ export default function Queue() {
           return true;
       }
     });
-  }, [selectedFilter, queueUserData.data]);
+  }, [selectedFilter, queueHistories]);
   const currentPage = 1;
   const totalPages = Math.ceil(filteredData.length / 10);
-
+  console.log("Filtered data based on selected filter:", filteredData);
   return (
     <div className="p-6">
       {/* Modern Header */}
@@ -71,7 +74,7 @@ export default function Queue() {
               Total Records
             </div>
             <div className="text-2xl font-bold text-[#157aa2] mt-1">
-              {queueUserData.data?.length || 0}
+              {queueHistories?.length}
             </div>
           </div>
           <div className="bg-linear-to-br from-green-50 to-green-100/50 p-4 rounded-xl border-2 border-green-200">
@@ -105,7 +108,7 @@ export default function Queue() {
       </div>
 
       <div className="animate-fade-in-delay-2">
-       <HistoryCard data={filteredData} />
+        <OneCard data={filteredData} />
       </div>
       <div className="mt-6 animate-fade-in-delay-3">
         <PaginationSeatAssign

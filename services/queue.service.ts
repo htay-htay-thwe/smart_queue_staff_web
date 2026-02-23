@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 import { getAuthCookie } from "@/lib/cookies";
 import { Queue } from "@/types/shopQueue.api.types";
+import { useQuery } from "@tanstack/react-query";
 
 export const getQueue = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
@@ -12,6 +13,18 @@ export const getQueue = async (shopId: string): Promise<Queue[]> => {
     },
   });
   return res.data.data;
+};
+
+export const getQueueHistory = async (shopId: string): Promise<Queue[]> => {
+  console.log("Fetching queue for shopId:", shopId);
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.get<Queue[]>(`queues/getQueue-history/${shopId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
 export const assignTableToQueue = async ({
@@ -78,4 +91,13 @@ export const releaseTableAndUpdateQueue = async ({
     },
   );
   return res.data;
+};
+
+export const useFetchQueueHistory = (shopId: string) => {
+  return useQuery({
+    queryKey: ["queueHistory", shopId],
+    queryFn: () => getQueueHistory(shopId),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
 };

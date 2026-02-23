@@ -7,17 +7,19 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useFetchQueue = (shopId: string) => {
   return useQuery({
     queryKey: ["queue", shopId],
     queryFn: () => getQueue(shopId),
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
-    retry: 1,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 };
 
 export const useAssignTable = (router: ReturnType<typeof useRouter>) => {
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: assignTableToQueue,
     onSuccess: (data) => {
@@ -27,7 +29,7 @@ export const useAssignTable = (router: ReturnType<typeof useRouter>) => {
           color: "green",
         },
       });
-      console.log("assigned", data);
+      queryClient.invalidateQueries({ queryKey: ["queue"] });
       router.push("/dashboard/queue");
       router.refresh();
     },
@@ -40,7 +42,6 @@ export const useAssignTable = (router: ReturnType<typeof useRouter>) => {
       });
     },
   });
-
   return mutation;
 };
 
@@ -48,12 +49,13 @@ export const useOccupyTable = (shopId: string) => {
   return useQuery({
     queryKey: ["occupyTable", shopId],
     queryFn: () => occupyTable({ shop_id: shopId }),
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
-    retry: 1,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 };
 
 export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: releaseTableAndUpdateQueue,
     onSuccess: (data) => {
@@ -63,6 +65,7 @@ export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
           color: "green",
         },
       });
+      queryClient.invalidateQueries({ queryKey: ["queue"] });
       console.log("released", data);
       router.push("/dashboard/queue");
       router.refresh();

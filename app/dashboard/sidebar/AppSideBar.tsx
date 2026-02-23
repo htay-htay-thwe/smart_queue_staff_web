@@ -28,15 +28,16 @@ import {
   Settings,
   FileText,
   LogOut,
+  UtensilsCrossed,
 } from "lucide-react";
 import SmartQLogo from "@/asset/image/Logo.png";
 import V from "@/asset/image/v.png";
-import { Button } from "@/components/ui/button";
 import { shopLogOut } from "@/services/auth.service";
 
 const menuItems = [
   { href: "/dashboard/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/dashboard/queue", icon: Ticket, label: "Queue" },
+  { href: "/dashboard/dining", icon: UtensilsCrossed, label: "Dining" },
   { href: "/dashboard/history", icon: History, label: "History" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
   { href: "/dashboard/report", icon: FileText, label: "Report" },

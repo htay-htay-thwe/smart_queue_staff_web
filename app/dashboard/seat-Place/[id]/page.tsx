@@ -26,7 +26,7 @@ export default function SeatPlace() {
   console.log("Queue user data:", queueUser);
   const tableTypes = shopData.tableTypes;
   console.log("Shop table types:", queueUser?.table_type_id, tableTypes);
-
+console.log(queueUser?.customer_id.name);
   // Clean seat type lookup function
   function getSeatTypeLabel(table_type_id: string): string {
     const typesRaw = queueUser?.shop_id?.tableTypes || shopData.tableTypes;

@@ -111,8 +111,8 @@ export const useFetchShopTypes = () => {
   return useQuery({
     queryKey: ["shopTypes"],
     queryFn: fetchShopTypes,
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
-    retry: 1,
+    staleTime: 0, // always refetch on mount
+    refetchOnWindowFocus: true,
   });
 };
 

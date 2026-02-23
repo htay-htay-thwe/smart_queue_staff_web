@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import QueueCircle from "../statistics/QueueCircle";
 import Image from "next/image";
 import profile from "@/asset/image/profile.jpg";
 
