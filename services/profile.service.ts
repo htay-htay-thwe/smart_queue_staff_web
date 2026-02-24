@@ -1,0 +1,134 @@
+import { api } from "@/lib/api";
+import { getAuthCookie } from "@/lib/cookies";
+
+export const changeShopName = async ({
+  shop_id,
+  shopTitle,
+}: {
+  shop_id: string;
+  shopTitle: string;
+}) => {
+  console.log("Fetching queue for shopId:", shop_id);
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-shopName`,
+    { shop_id, shopTitle },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const changeShopEmail = async ({
+  oldEmail,
+  newEmail,
+}: {
+  oldEmail: string;
+  newEmail: string;
+}) => {
+  console.log("Changing shop email from", oldEmail, "to", newEmail);
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-email`,
+    { oldEmail, newEmail },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const changeShopPhoneNumber = async ({
+  oldPhoneNumber,
+  newPhoneNumber,
+}: {
+  oldPhoneNumber: string;
+  newPhoneNumber: string;
+}) => {
+  console.log(
+    "Changing shop phone number from",
+    oldPhoneNumber,
+    "to",
+    newPhoneNumber,
+  );
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-phone-number`,
+    { oldPhoneNumber, newPhoneNumber },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const changeShopPassword = async ({
+  email,
+  newPassword,
+}: {
+  email: string;
+  newPassword: string;
+}) => {
+  console.log("Changing shop password for email", email, "to new password");
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-password`,
+    { email, newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const changeShopAddress = async ({
+  shop_id,
+  fullAddress,
+  lat,
+  lng,
+}: {
+  shop_id: string;
+  fullAddress: string;
+  lat: number;
+  lng: number;
+}) => {
+  console.log(
+    "Changing shop address for shop_id",
+    shop_id,
+    "to new address",
+    fullAddress,
+    "with coordinates",
+    lat,
+    lng,
+  );
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-address`,
+    {
+      shop_id,
+      fullAddress,
+      lat,
+      lng,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};

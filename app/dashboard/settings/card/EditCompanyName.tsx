@@ -16,7 +16,11 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Check, X } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import z from "zod";
+import { useEffect, useState } from "react";
+import z, { set } from "zod";
+import { useChangeShopName } from "@/hooks/useProfile";
+import { Loading } from "@/components/ui/loading";
+import { useShopStore } from "@/store/shopStore";
 
 const formSchema = z.object({
   companyName: z.string().min(1, "* required"),
@@ -24,28 +28,54 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-export function EditCompanyName() {
+type EditCompanyNameProps = {
+  id: string;
+  name: string;
+};
+
+export function EditCompanyName({ id, name }: EditCompanyNameProps) {
+  console.log("EditCompanyName Props:", { id, name });
+  const [open, setOpen] = useState(false);
+  const { mutate: changeCompanyName, isPending } = useChangeShopName();
+  const setShop = useShopStore((s) => s.setShop);
   const form = useForm({
     resolver: zodResolver(formSchema),
     mode: "onSubmit" as const,
     defaultValues: {
-      companyName: "H2T Company Ltd.",
+      companyName: name,
     },
   });
 
-  function onSubmit(data: FormSchema) {
-    console.log("Company Name Updated:", data.companyName);
+  useEffect(() => {
+    form.reset({ companyName: name });
+  }, [name]);
+
+  function onSubmit(data: FormSchema, id: string) {
+    console.log("Company Name Updated:", data.companyName, "for ID:", id);
+    changeCompanyName(
+      { shop_id: id, shopTitle: data.companyName },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          form.reset({ companyName: data.companyName });
+          setShop({ name: data.companyName });
+        },
+      },
+    );
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-linear-to-r from-orange-500 to-amber-600 text-white px-6 h-10 rounded-lg transition-all duration-300 hover:from-orange-600 hover:to-amber-700 hover:scale-105 shadow-md hover:shadow-lg">
           Change
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 shadow-2xl">
-        <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          id="form-rhf-demo"
+          onSubmit={form.handleSubmit((data) => onSubmit(data, id))}
+        >
           {/* Header with gradient background */}
           <div className="bg-linear-to-br from-orange-500 to-amber-600 p-8 text-white relative overflow-hidden">
             {/* Decorative circles */}
@@ -89,7 +119,6 @@ export function EditCompanyName() {
                       id="companyName"
                       aria-invalid={fieldState.invalid}
                       type="text"
-                      defaultValue="H2T Company Ltd."
                       placeholder="Enter company name"
                       className="h-12 rounded-xl border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all duration-300"
                     />
@@ -123,6 +152,7 @@ export function EditCompanyName() {
             </Button>
           </DialogFooter>
         </form>
+        {isPending && <Loading />}
       </DialogContent>
     </Dialog>
   );

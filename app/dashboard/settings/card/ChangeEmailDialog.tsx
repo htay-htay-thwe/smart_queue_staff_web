@@ -17,44 +17,70 @@ import { Label } from "@/components/ui/label";
 import { Mail, Check, X, Sparkles, CheckCircle2 } from "lucide-react";
 import OTPVerificationDialog from "@/app/auth/register/stepOne/card/OTPVerificationDialog";
 import { toast } from "sonner";
+import { useChangeEmail } from "@/hooks/useProfile";
+import { useOtpSendToEmail } from "@/hooks/useRegister";
+import { Loading } from "@/components/ui/loading";
+import { useShopStore } from "@/store/shopStore";
 
-export function ChangeEmailDialog() {
+type ChangeEmailDialogProps = {
+  email: string;
+};
+export function ChangeEmailDialog({ email }: ChangeEmailDialogProps) {
   const [newEmail, setNewEmail] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
+  const [isNewEmailVerified, setIsNewEmailVerified] = useState(false);
+  const [isOldEmailVerified, setIsOldEmailVerified] = useState(false);
   const [showOTPDialog, setShowOTPDialog] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { mutate: sendOTPToEmail, isPending } = useOtpSendToEmail();
+  const { mutate: changeEmail } = useChangeEmail();
+  const setShopData = useShopStore((s) => s.setShop);
 
   const handleVerifyClick = () => {
-    if (!newEmail || !newEmail.includes("@")) {
+    if (
+      (newEmail && !newEmail.includes("@")) ||
+      (email && !email.includes("@"))
+    ) {
       toast.error("Please enter a valid email address", {
         position: "bottom-right",
       });
       return;
     }
+    if (email && !isOldEmailVerified) {
+      sendOTPToEmail(email);
+    }
+    if (newEmail && !isNewEmailVerified) {
+      sendOTPToEmail(newEmail);
+    }
+
     setShowOTPDialog(true);
   };
 
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isVerified) {
-      toast.error("Please verify your new email address first", {
-        position: "bottom-right",
-      });
-      return;
-    }
-    toast.success("Email updated successfully!", {
-      position: "bottom-right",
-    });
-    setIsOpen(false);
-    setNewEmail("");
-    setIsVerified(false);
+    changeEmail(
+      { oldEmail: email, newEmail: newEmail },
+      {
+        onSuccess: () => {
+          toast.success("Email updated successfully!", {
+            position: "top-right",
+            style: { color: "green" },
+          });
+          setShopData({ email: newEmail });
+          // reset local dialog state
+          setNewEmail("");
+          setIsNewEmailVerified(false);
+          setIsOldEmailVerified(false);
+          setShowOTPDialog(false);
+          setIsOpen(false);
+        },
+      },
+    );
   };
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
       setNewEmail("");
-      setIsVerified(false);
     }
   };
 
@@ -66,7 +92,7 @@ export function ChangeEmailDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 shadow-2xl">
-        <form>
+        <form onSubmit={handleUpdate}>
           {/* Header with gradient background */}
           <div className="bg-linear-to-br from-blue-500 to-blue-600 p-8 text-white relative overflow-hidden">
             {/* Decorative circles */}
@@ -100,15 +126,31 @@ export function ChangeEmailDialog() {
                 >
                   <Mail className="w-4 h-4 text-blue-500" />
                   Current Email
+                  {isOldEmailVerified && (
+                    <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
+                  )}
                 </Label>
-                <Input
-                  id="current-email"
-                  name="currentEmail"
-                  type="email"
-                  value="htaythwe@gmail.com"
-                  disabled
-                  className="h-12 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-500"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="current-email"
+                    name="currentEmail"
+                    type="email"
+                    value={email}
+                    disabled
+                    className="h-12 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-500"
+                  />
+                  {!isOldEmailVerified && (
+                    <Button
+                      type="button"
+                      onClick={handleVerifyClick}
+                      name="currentEmail"
+                      disabled={!email || !email.includes("@")}
+                      className="h-12 px-6 bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 whitespace-nowrap"
+                    >
+                      Verify
+                    </Button>
+                  )}
+                </div>
               </Field>
 
               <Field>
@@ -118,7 +160,7 @@ export function ChangeEmailDialog() {
                 >
                   <Mail className="w-4 h-4 text-blue-500" />
                   New Email Address
-                  {isVerified && (
+                  {isNewEmailVerified && (
                     <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
                   )}
                 </Label>
@@ -130,13 +172,13 @@ export function ChangeEmailDialog() {
                     value={newEmail}
                     onChange={(e) => {
                       setNewEmail(e.target.value);
-                      setIsVerified(false);
+                      setIsNewEmailVerified(false);
                     }}
-                    disabled={isVerified}
+                    disabled={isNewEmailVerified}
                     placeholder="Enter new email address"
                     className="h-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 disabled:opacity-60"
                   />
-                  {!isVerified && (
+                  {!isNewEmailVerified && (
                     <Button
                       type="button"
                       onClick={handleVerifyClick}
@@ -153,9 +195,13 @@ export function ChangeEmailDialog() {
                 open={showOTPDialog}
                 onOpenChange={setShowOTPDialog}
                 type="email"
-                value={newEmail}
+                value={newEmail || email}
                 onVerified={() => {
-                  setIsVerified(true);
+                  if (newEmail) {
+                    setIsNewEmailVerified(true);
+                  } else {
+                    setIsOldEmailVerified(true);
+                  }
                 }}
               />
 
@@ -193,7 +239,7 @@ export function ChangeEmailDialog() {
             <Button
               type="submit"
               onClick={handleUpdate}
-              disabled={!isVerified}
+              disabled={!isNewEmailVerified && !isOldEmailVerified}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
@@ -201,6 +247,7 @@ export function ChangeEmailDialog() {
             </Button>
           </DialogFooter>
         </form>
+        {isPending && <Loading />}
       </DialogContent>
     </Dialog>
   );

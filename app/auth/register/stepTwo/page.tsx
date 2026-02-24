@@ -13,7 +13,6 @@ import ProfileImageUpload from "./card/ProfileImageUpload";
 import dynamic from "next/dynamic";
 const MapPicker = dynamic(() => import("./card/MapPicker"), { ssr: false });
 import { useEffect, useState } from "react";
-import { Marker } from "react-leaflet";
 
 const formSchema = z.object({
   shop_img: z

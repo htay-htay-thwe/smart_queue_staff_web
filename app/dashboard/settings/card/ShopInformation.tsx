@@ -9,8 +9,12 @@ import {
 import { EditShopInformationDialog } from "./EditShopInformationDialog";
 import { Separator } from "@/components/ui/separator";
 import { Store, Utensils, FileText, Table } from "lucide-react";
+import { ShopData } from "@/types/shopQueue.api.types";
 
-export default function ShopInformation() {
+type ShopInformationProps = {
+  shop: ShopData;
+};
+export default function ShopInformation({ shop }: ShopInformationProps) {
   return (
     <div className="p-4 w-full">
       <Card>
@@ -36,9 +40,9 @@ export default function ShopInformation() {
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Store className="h-4 w-4" />
-                <span>Shop Title</span>
+                <span>Shop Name</span>
               </div>
-              <p className="text-base font-medium">H2T Shop</p>
+              <p className="text-base font-medium">{shop?.name}</p>
             </div>
 
             <div className="space-y-1">
@@ -46,7 +50,9 @@ export default function ShopInformation() {
                 <Utensils className="h-4 w-4" />
                 <span>Shop Type</span>
               </div>
-              <p className="text-base font-medium">🍜 Asian Cuisine</p>
+              <p className="text-base font-medium">
+                {shop?.shopTypes.shopTypeName}
+              </p>
             </div>
           </div>
 
@@ -56,7 +62,7 @@ export default function ShopInformation() {
               <span>Description</span>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              H2T Shop
+              {shop?.description || "H2T Shop"}
             </p>
           </div>
 
@@ -68,44 +74,20 @@ export default function ShopInformation() {
               <h3 className="text-sm font-medium">Table Configuration</h3>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-lg border bg-card p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    2-Seater
-                  </span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                    <Table className="h-4 w-4 text-primary" />
+              {shop?.tableTypes.map((table) => (
+                <div className="rounded-lg border bg-card p-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      {table.type}
+                    </span>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                      <Table className="h-4 w-4 text-primary" />
+                    </div>
                   </div>
+                  <p className="mt-2 text-2xl font-bold">{table.capacity}</p>
+                  <p className="text-xs text-muted-foreground">tables</p>
                 </div>
-                <p className="mt-2 text-2xl font-bold">20</p>
-                <p className="text-xs text-muted-foreground">tables</p>
-              </div>
-
-              <div className="rounded-lg border bg-card p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    4-Seater
-                  </span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                    <Table className="h-4 w-4 text-primary" />
-                  </div>
-                </div>
-                <p className="mt-2 text-2xl font-bold">40</p>
-                <p className="text-xs text-muted-foreground">tables</p>
-              </div>
-
-              <div className="rounded-lg border bg-card p-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    6-Seater
-                  </span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                    <Table className="h-4 w-4 text-primary" />
-                  </div>
-                </div>
-                <p className="mt-2 text-2xl font-bold">60</p>
-                <p className="text-xs text-muted-foreground">tables</p>
-              </div>
+              ))}
             </div>
           </div>
         </CardContent>

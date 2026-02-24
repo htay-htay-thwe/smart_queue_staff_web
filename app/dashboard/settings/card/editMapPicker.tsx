@@ -21,7 +21,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-export default function MapPicker({ location, setLocation }: Props) {
+export default function EditMapPicker({ location, setLocation }: Props) {
   function LocationMarker() {
     useMapEvents({
       async click(e) {

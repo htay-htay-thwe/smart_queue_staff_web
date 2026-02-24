@@ -2,8 +2,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import profile from "@/asset/image/profile.jpg";
 import { MapPin, User, Briefcase } from "lucide-react";
+import { ShopData } from "@/types/shopQueue.api.types";
 
-export default function Profile() {
+type ProfileProps = {
+    shop: ShopData;
+};
+
+export default function Profile({ shop }: ProfileProps) {
+    console.log("Shop Data in Profile Component:", shop);
     return (
         <div className="p-6">
             <Card className="group overflow-hidden border-2 transition-all duration-300 hover:shadow-xl hover:border-primary/50">
@@ -29,7 +35,7 @@ export default function Profile() {
                     {/* User info */}
                     <div className="space-y-3 text-center">
                         <div>
-                            <h3 className="text-2xl font-bold tracking-tight">John Smith</h3>
+                            <h3 className="text-2xl font-bold tracking-tight">{shop.name}</h3>
                             <div className="mt-1 flex items-center justify-center gap-2 text-sm text-muted-foreground">
                                 <Briefcase className="h-4 w-4" />
                                 <span>Regular Customer</span>
@@ -38,7 +44,7 @@ export default function Profile() {
 
                         <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 px-4 py-2 text-sm transition-colors hover:bg-muted">
                             <MapPin className="h-4 w-4 text-primary" />
-                            <span className="font-medium">Bangkok, Thailand</span>
+                            <span className="font-medium">{shop.address.fullAddress}</span>
                         </div>
                     </div>
                 </CardContent>

@@ -1,12 +1,24 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ChangeEmailDialog } from "./ChangeEmailDialog";
-import { ChangePhoneDialog} from "./ChangePhoneDialog";
+import { ChangePhoneDialog } from "./ChangePhoneDialog";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { EditCompanyName } from "./EditCompanyName";
 import { Building2, Calendar, Mail, Phone, Lock, Shield } from "lucide-react";
+import { ShopData } from "@/types/shopQueue.api.types";
 
-export default function AccountInformation() {
+type AccountInformationProps = {
+  shop: ShopData;
+};
+
+export default function AccountInformation({ shop }: AccountInformationProps) {
+
   return (
     <div className="p-4 sm:p-6 w-full">
       <Card>
@@ -17,7 +29,9 @@ export default function AccountInformation() {
             </div>
             <div className="flex-1">
               <CardTitle>Account Information</CardTitle>
-              <CardDescription>Manage your account details and security</CardDescription>
+              <CardDescription>
+                Manage your account details and security
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -33,9 +47,9 @@ export default function AccountInformation() {
                     <Building2 className="h-4 w-4" />
                     <span>Company Name</span>
                   </div>
-                  <p className="text-sm font-medium">H2T Company</p>
+                  <p className="text-sm font-medium">{shop.name}</p>
                 </div>
-                <EditCompanyName />
+                <EditCompanyName id={shop._id} name={shop.name} />
               </div>
             </div>
 
@@ -44,7 +58,9 @@ export default function AccountInformation() {
                 <Calendar className="h-4 w-4" />
                 <span>Date of Registration</span>
               </div>
-              <p className="text-base font-medium">11.2.2025</p>
+              <p className="text-base font-medium">
+                {new Date(shop.createdAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
 
@@ -60,9 +76,9 @@ export default function AccountInformation() {
                     <Mail className="h-4 w-4" />
                     <span>Email Address</span>
                   </div>
-                  <p className="break-all text-sm font-medium">htaythwe@gmail.com</p>
+                  <p className="break-all text-sm font-medium">{shop.email}</p>
                 </div>
-                <ChangeEmailDialog />
+                <ChangeEmailDialog  email={shop.email} />
               </div>
             </div>
 
@@ -74,9 +90,9 @@ export default function AccountInformation() {
                     <Phone className="h-4 w-4" />
                     <span>Phone Number</span>
                   </div>
-                  <p className="text-sm font-medium">+0823989048</p>
+                  <p className="text-sm font-medium">{shop.phoneNumber}</p>
                 </div>
-                <ChangePhoneDialog />
+                <ChangePhoneDialog phoneNumber={shop.phoneNumber} />
               </div>
             </div>
 
@@ -90,7 +106,7 @@ export default function AccountInformation() {
                   </div>
                   <p className="text-sm font-medium">••••••••</p>
                 </div>
-                <ChangePasswordDialog />
+                <ChangePasswordDialog email={shop.email} />
               </div>
             </div>
 

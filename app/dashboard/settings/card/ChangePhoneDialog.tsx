@@ -17,44 +17,72 @@ import { Label } from "@/components/ui/label";
 import { Phone, Check, X, Sparkles, CheckCircle2 } from "lucide-react";
 import OTPVerificationDialog from "@/app/auth/register/stepOne/card/OTPVerificationDialog";
 import { toast } from "sonner";
+import { useShopStore } from "@/store/shopStore";
+import { useOtpSendToPhoneNumber } from "@/hooks/useRegister";
+import { useChangePhoneNumber } from "@/hooks/useProfile";
+import { is } from "zod/locales";
+import { Loading } from "@/components/ui/loading";
 
-export function ChangePhoneDialog() {
+type ChangePhoneDialogProps = {
+  phoneNumber: string;
+};
+
+export function ChangePhoneDialog({ phoneNumber }: ChangePhoneDialogProps) {
   const [newPhone, setNewPhone] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
   const [showOTPDialog, setShowOTPDialog] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isNewPhoneVerified, setIsNewPhoneVerified] = useState(false);
+  const [isOldPhoneVerified, setIsOldPhoneVerified] = useState(false);
+  const { mutate: sendOTPToPhone, isPending } = useOtpSendToPhoneNumber();
+  const { mutate: changePhone } = useChangePhoneNumber();
+  const setShopData = useShopStore((s) => s.setShop);
 
   const handleVerifyClick = () => {
-    if (!newPhone || !/^[0-9]+$/.test(newPhone)) {
+    if (
+      (newPhone && !/^[0-9]+$/.test(newPhone)) ||
+      (phoneNumber && !/^[0-9]+$/.test(phoneNumber))
+    ) {
       toast.error("Please enter a valid phone number", {
         position: "bottom-right",
       });
       return;
+    }
+    console.log("Verifying phone numbers:", { phoneNumber });
+    if (phoneNumber && !isOldPhoneVerified) {
+      sendOTPToPhone(phoneNumber);
+    }
+    if (newPhone && !isNewPhoneVerified) {
+      sendOTPToPhone(newPhone);
     }
     setShowOTPDialog(true);
   };
 
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isVerified) {
-      toast.error("Please verify your new phone number first", {
-        position: "bottom-right",
-      });
-      return;
-    }
-    toast.success("Phone number updated successfully!", {
-      position: "bottom-right",
-    });
-    setIsOpen(false);
-    setNewPhone("");
-    setIsVerified(false);
+    changePhone(
+      { oldPhoneNumber: phoneNumber, newPhoneNumber: newPhone },
+      {
+        onSuccess: () => {
+          toast.success("Phone number updated successfully!", {
+            position: "top-right",
+            style: { color: "green" },
+          });
+          setShopData({ phoneNumber: newPhone });
+          setNewPhone("");
+          setIsNewPhoneVerified(false);
+          setIsOldPhoneVerified(false);
+          setShowOTPDialog(false);
+          setIsOpen(false);
+        },
+      },
+    );
   };
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
       setNewPhone("");
-      setIsVerified(false);
+      setIsNewPhoneVerified(false);
     }
   };
 
@@ -66,7 +94,7 @@ export function ChangePhoneDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden border-0 shadow-2xl">
-        <form>
+        <form onSubmit={handleUpdate}>
           {/* Header with gradient background */}
           <div className="bg-linear-to-br from-green-500 to-green-600 p-8 text-white relative overflow-hidden">
             {/* Decorative circles */}
@@ -100,15 +128,30 @@ export function ChangePhoneDialog() {
                 >
                   <Phone className="w-4 h-4 text-green-500" />
                   Current Phone Number
+                  {isOldPhoneVerified && (
+                    <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
+                  )}
                 </Label>
-                <Input
-                  id="current-phone"
-                  name="currentPhone"
-                  type="tel"
-                  value="+0823989048"
-                  disabled
-                  className="h-12 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-500"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="current-phone"
+                    name="currentPhone"
+                    type="tel"
+                    value={phoneNumber}
+                    disabled
+                    className="h-12 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-500"
+                  />
+                  {!isOldPhoneVerified && (
+                    <Button
+                      type="button"
+                      onClick={handleVerifyClick}
+                      disabled={!phoneNumber || !/^[0-9]+$/.test(phoneNumber)}
+                      className="h-12 px-6 bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 whitespace-nowrap"
+                    >
+                      Verify
+                    </Button>
+                  )}
+                </div>
               </Field>
 
               <Field>
@@ -118,7 +161,7 @@ export function ChangePhoneDialog() {
                 >
                   <Phone className="w-4 h-4 text-green-500" />
                   New Phone Number
-                  {isVerified && (
+                  {isNewPhoneVerified && (
                     <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
                   )}
                 </Label>
@@ -130,13 +173,13 @@ export function ChangePhoneDialog() {
                     value={newPhone}
                     onChange={(e) => {
                       setNewPhone(e.target.value);
-                      setIsVerified(false);
+                      setIsNewPhoneVerified(false);
                     }}
-                    disabled={isVerified}
+                    disabled={isNewPhoneVerified}
                     placeholder="Enter new phone number"
                     className="h-12 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300 disabled:opacity-60"
                   />
-                  {!isVerified && (
+                  {!isNewPhoneVerified && (
                     <Button
                       type="button"
                       onClick={handleVerifyClick}
@@ -153,9 +196,13 @@ export function ChangePhoneDialog() {
                 open={showOTPDialog}
                 onOpenChange={setShowOTPDialog}
                 type="phone"
-                value={newPhone}
+                value={newPhone || phoneNumber}
                 onVerified={() => {
-                  setIsVerified(true);
+                  if (newPhone) {
+                    setIsNewPhoneVerified(true);
+                  } else {
+                    setIsOldPhoneVerified(true);
+                  }
                 }}
               />
 
@@ -193,7 +240,7 @@ export function ChangePhoneDialog() {
             <Button
               type="submit"
               onClick={handleUpdate}
-              disabled={!isVerified}
+              disabled={!isNewPhoneVerified && !isOldPhoneVerified}
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
@@ -201,6 +248,7 @@ export function ChangePhoneDialog() {
             </Button>
           </DialogFooter>
         </form>
+        {isPending && <Loading />}
       </DialogContent>
     </Dialog>
   );

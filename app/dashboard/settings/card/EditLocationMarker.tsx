@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-export const LocationMarker = ({ setLocation }: any) => {
+export const EditLocationMarker = ({ setLocation }: any) => {
   const [position, setPosition] = useState<any>(null);
   const setStepTwo = useRegisterStore((s) => s.setStepTwo);
 
@@ -32,7 +32,6 @@ export const LocationMarker = ({ setLocation }: any) => {
       console.log("reverse geocoding data", data.address);
 
       const address = data.address || {};
-
       setLocation({
         lat,
         lng,
