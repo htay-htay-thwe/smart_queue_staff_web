@@ -85,6 +85,23 @@ export function EditAddressDialog({
       },
     },
   });
+
+  // Log and sync when `location` from the map picker changes
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log("EditAddressDialog - location state:", location);
+    if (
+      location &&
+      typeof location.lat === "number" &&
+      typeof location.lng === "number"
+    ) {
+      form.setValue("location.lat", location.lat);
+      form.setValue("location.lng", location.lng);
+      if (location.fullAddress)
+        form.setValue("fullAddress", location.fullAddress);
+    }
+  }, [location]);
+
   const { mutate: updateAddress, isPending } = useChangeAddress();
   const setShopData = useShopStore((s) => s.setShop);
 
@@ -99,21 +116,35 @@ export function EditAddressDialog({
         lng: data.location.lng,
       },
       {
-        onSuccess: () => {
+        onSuccess: (res: any) => {
           toast.success("Address updated successfully!", {
             position: "top-right",
             style: { color: "green" },
           });
-          setShopData({
-            address: {
-              location: {
-                type: "Point",
-                coordinates: [data.location.lng, data.location.lat],
-              },
-              fullAddress: data.fullAddress,
-              _id: id,
-            },
-          });
+
+          // Try to use server-returned address when available
+          const serverAddress = res?.address || res?.data?.address || null;
+          console.log("Server returned address:", serverAddress);
+
+          const addressToSet = serverAddress
+            ? serverAddress
+            : {
+                location: {
+                  type: "Point",
+                  coordinates: [data.location.lng, data.location.lat],
+                },
+                fullAddress: data.fullAddress,
+                // fallback id: if server didn't return an address id, use shop id as placeholder
+                _id: id,
+              };
+
+          setShopData({ address: addressToSet });
+          // debug: log store after update to verify
+          // eslint-disable-next-line no-console
+          console.log(
+            "shop store after address set",
+            useShopStore.getState().shop,
+          );
           setIsOpen(false);
         },
       },
@@ -155,11 +186,6 @@ export function EditAddressDialog({
           {/* Form content */}
           <div className="p-8 animate-fade-in-delay-3">
             <EditMapPicker location={location} setLocation={setLocation} />
-            <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-500">
-              <Label htmlFor="fullAddress" className="mb-2">
-                {location?.fullAddress || "No address selected"}
-              </Label>
-            </div>
           </div>
 
           {/* Footer with buttons */}

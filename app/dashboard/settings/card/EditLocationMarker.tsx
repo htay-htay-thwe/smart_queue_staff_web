@@ -32,6 +32,7 @@ export const EditLocationMarker = ({ setLocation }: any) => {
       console.log("reverse geocoding data", data.address);
 
       const address = data.address || {};
+      console.log("Extracted address components:", lng, lat, address);
       setLocation({
         lat,
         lng,

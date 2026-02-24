@@ -38,6 +38,7 @@ export default function EditMapPicker({ location, setLocation }: Props) {
         } catch (err) {
           fullAddress = "";
         }
+
         setLocation({ lat, lng, fullAddress });
       },
     });
