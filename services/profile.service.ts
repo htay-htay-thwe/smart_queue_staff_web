@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import { getAuthCookie } from "@/lib/cookies";
+import { ProfileUpdateRequest } from "@/types/shopQueue.api.types";
 
 export const changeShopName = async ({
   shop_id,
@@ -172,5 +173,25 @@ export const changeShopInformation = async ({
       },
     },
   );
+  return res.data;
+};
+
+export const changeProfileImage = async (data: ProfileUpdateRequest) => {
+  console.log(
+    "Changing shop profile image for shop_id",
+    data.shop_id,
+    "with new image",
+    data.shop_image,
+  );
+  const formData = new FormData();
+  formData.append("shop_id", data.shop_id);
+  formData.append("image", data.shop_image);
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(`shops/change-profileImage`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return res.data;
 };

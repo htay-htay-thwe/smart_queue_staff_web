@@ -31,6 +31,7 @@ import { useChangeShopInformation } from "@/hooks/useProfile";
 import { ShopData } from "@/types/shopQueue.api.types";
 import { Loading } from "@/components/ui/loading";
 import { useFetchShopTypes } from "@/hooks/useRegister";
+import { useShopStore } from "@/store/shopStore";
 
 type EditShopInformationDialogProps = {
   shop: ShopData;
@@ -66,6 +67,7 @@ export function EditShopInformationDialog({
   const { mutate: changeShopInformation, isPending } =
     useChangeShopInformation();
   const { data: shopTypes = [] } = useFetchShopTypes();
+  const setShop = useShopStore((s) => s.setShop);
   const form = useForm({
     resolver: zodResolver(formSchema),
     mode: "onSubmit" as const,
@@ -84,7 +86,7 @@ export function EditShopInformationDialog({
   console.log("Form default values:", form.getValues());
 
   const onSubmit = (data: FormSchema) => {
-    console.log("Shop data:", data);
+    console.log("Shop data in submit:", data);
     changeShopInformation(
       {
         shop_id: shop._id,
@@ -95,8 +97,15 @@ export function EditShopInformationDialog({
         tableSix: data.tableSix,
       },
       {
-        onSuccess: () => {
-          toast.success("Shop information updated successfully");
+        onSuccess: (updatedShop) => {
+          toast.success("Shop information updated successfully", {
+            position: "top-right",
+            style: {
+              color: "green",
+            },
+          });
+          console.log("Updated shop data from API response:", updatedShop);
+          setShop({ ...updatedShop.data });
           setOpened(false);
           form.reset(data);
         },
@@ -108,6 +117,10 @@ export function EditShopInformationDialog({
     console.log("Form errors:", errors);
     toast.error("Please fix the errors", {
       description: "Some required fields are missing or invalid",
+      position: "top-right",
+      style: {
+        color: "red",
+      },
     });
   };
 
@@ -254,7 +267,7 @@ export function EditShopInformationDialog({
                             onChange={(e) =>
                               field.onChange(e.target.valueAsNumber)
                             }
-                            value={(field.value as number)}
+                            value={field.value as number}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -283,9 +296,9 @@ export function EditShopInformationDialog({
                             aria-invalid={fieldState.invalid}
                             placeholder="0"
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber )
+                              field.onChange(e.target.valueAsNumber)
                             }
-                            value={(field.value as number)}
+                            value={field.value as number}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -316,7 +329,7 @@ export function EditShopInformationDialog({
                             onChange={(e) =>
                               field.onChange(e.target.valueAsNumber)
                             }
-                            value={(field.value as number)}
+                            value={field.value as number}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -337,7 +350,7 @@ export function EditShopInformationDialog({
               <Button
                 type="button"
                 onClick={() => {
-                  form.reset()
+                  form.reset();
                 }}
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"

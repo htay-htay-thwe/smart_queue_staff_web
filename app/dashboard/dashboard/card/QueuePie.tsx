@@ -9,7 +9,11 @@ import {
 } from "@/components/ui/card";
 import QueueCircle from "../statistics/QueueCircle";
 
-export default function QueuePie() {
+type QueuePieProps = {
+  id: string;
+};
+
+export default function QueuePie({ id }: QueuePieProps) {
   return (
     <div className="group">
       <Card className="w-full gap-1 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
@@ -20,7 +24,7 @@ export default function QueuePie() {
           </CardAction>
         </CardHeader>
         <CardContent className="pt-2">
-          <QueueCircle />
+          <QueueCircle id={id} />
         </CardContent>
         <CardFooter className="justify-between w-full px-4 pt-2">
           <div className="flex">

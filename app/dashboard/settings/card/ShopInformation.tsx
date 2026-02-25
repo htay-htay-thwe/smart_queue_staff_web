@@ -62,7 +62,7 @@ export default function ShopInformation({ shop }: ShopInformationProps) {
               <span>Description</span>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {shop?.description || "H2T Shop"}
+              {shop?.description}
             </p>
           </div>
 
@@ -74,8 +74,8 @@ export default function ShopInformation({ shop }: ShopInformationProps) {
               <h3 className="text-sm font-medium">Table Configuration</h3>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              {shop?.tableTypes.map((table) => (
-                <div className="rounded-lg border bg-card p-4 shadow-sm">
+              {shop?.tableTypes.map((table,index) => (
+                <div key={index} className="rounded-lg border bg-card p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
                       {table.type}

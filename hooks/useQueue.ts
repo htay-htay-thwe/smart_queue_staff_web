@@ -1,6 +1,9 @@
 import {
   assignTableToQueue,
+  getMostQueueUsers,
   getQueue,
+  getQueueHistory,
+  getQueueRecord,
   occupyTable,
   releaseTableAndUpdateQueue,
 } from "@/services/queue.service";
@@ -78,5 +81,32 @@ export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
         },
       });
     },
+  });
+};
+
+export const useFetchQueueHistory = (shopId: string) => {
+  return useQuery({
+    queryKey: ["queueHistory", shopId],
+    queryFn: () => getQueueHistory(shopId),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const useFetchMostQueueUsers = (shopId: string) => {
+  return useQuery({
+    queryKey: ["mostQueueUsers", shopId],
+    queryFn: () => getMostQueueUsers(shopId),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const useFetchQueueRecord = (shopId: string) => {
+  return useQuery({
+    queryKey: ["queueRecord", shopId],
+    queryFn: () => getQueueRecord(shopId),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 };

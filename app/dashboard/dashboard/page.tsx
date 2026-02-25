@@ -26,10 +26,10 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-col gap-5">
           <div className="animate-fade-in-delay-1">
-            <QueuePie />
+            <QueuePie id={userData._id} />
           </div>
           <div className="animate-fade-in-delay-2">
-            <MostQueueUser />
+            <MostQueueUser id={userData._id} />
           </div>
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function Dashboard() {
             <LiveTable />
           </div>
           <div className="animate-fade-in-delay-2">
-            <QueueRecord />
+            <QueueRecord id={userData._id} createdAt={userData.createdAt} />
           </div>
         </div>
       </div>

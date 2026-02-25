@@ -171,7 +171,7 @@ export function EditAddressDialog({
                 htmlFor="fullAddress"
                 className="block text-sm font-medium text-gray-700 mt-6 mb-2"
               >
-                {location.fullAddress}
+                {location?.fullAddress}
               </label>
             </div>
           </div>

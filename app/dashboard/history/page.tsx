@@ -4,36 +4,33 @@ import { useState, useMemo } from "react";
 import PaginationSeatAssign from "../queue/card/PaginationSeatAssign";
 import { History, Filter } from "lucide-react";
 import { useShopStore } from "@/store/shopStore";
-import { useFetchQueueHistory } from "@/services/queue.service";
 import HistoryCard from "./card/HistoryCard";
+import { useFetchQueueHistory } from "@/hooks/useQueue";
 
 export default function Queue() {
   const [selectedFilter, setSelectedFilter] = useState("all");
 
   const shopData = useShopStore((s) => s.shop);
-  console.log("shopData", shopData);
+
   const queueUserData = useFetchQueueHistory(shopData._id);
-
-  console.log("Fetched queue history data:", queueUserData.data);
-  // Filter data based on selected date filter
   const filteredData = useMemo(() => {
-    const today = new Date();
-
     if (selectedFilter === "all") {
       return queueUserData.data || [];
     }
 
-    console.log("Fetched queue histories:", queueUserData.data);
-
     return (queueUserData.data || []).filter((item) => {
-      const [day, month, year] = item.updatedAt.split(".").map(Number);
-      const itemDate = new Date(year, month - 1, day);
-      const diffTime = today.getTime() - itemDate.getTime();
+      const itemDateStr = new Date(item.updatedAt).toISOString().slice(0, 10);
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      const itemDate = new Date(itemDateStr);
+      const todayDate = new Date(todayStr);
+
+      const diffTime = todayDate.getTime() - itemDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
       switch (selectedFilter) {
         case "today":
-          return diffDays === 0;
+          return itemDateStr === todayStr;
         case "yesterday":
           return diffDays === 1;
         case "week":
@@ -105,7 +102,7 @@ export default function Queue() {
       </div>
 
       <div className="animate-fade-in-delay-2">
-       <HistoryCard data={filteredData} />
+        <HistoryCard data={filteredData} />
       </div>
       <div className="mt-6 animate-fade-in-delay-3">
         <PaginationSeatAssign

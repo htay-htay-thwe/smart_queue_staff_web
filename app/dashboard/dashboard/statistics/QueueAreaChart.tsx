@@ -1,5 +1,6 @@
 "use client";
 
+import { formattedData, QueueRecord } from "@/types/shopQueue.api.types";
 import {
   AreaChart,
   Area,
@@ -9,16 +10,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { month: "May", current: 250, last: 120 },
-  { month: "Jun", current: 180, last: 150 },
-  { month: "Jul", current: 140, last: 190 },
-  { month: "Aug", current: 230, last: 140 },
-  { month: "Sep", current: 220, last: 170 },
-  { month: "Oct", current: 240, last: 130 },
-];
+type QueueRecordProps = {
+  data: formattedData[];
+};
 
-export default function QueueAreaChart() {
+export default function QueueAreaChart({ data }: QueueRecordProps) {
+  console.log("Formatted:", data);
   return (
     <div className="w-full h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -31,15 +28,11 @@ export default function QueueAreaChart() {
             </linearGradient>
           </defs>
 
-          <XAxis
-            dataKey="month"
-            axisLine={false}
-            tickLine={false}
-          />
+          <XAxis dataKey="month" axisLine={false} tickLine={false} />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => `$${v}k`}
+            tickFormatter={(value) => value}
           />
           <Tooltip />
 

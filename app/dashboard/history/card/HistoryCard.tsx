@@ -66,7 +66,7 @@ export default function HistoryCard({ data }: OneCardProps) {
                   </div>
                   <div>
                     <div className="font-bold text-lg text-gray-800 flex items-center gap-2">
-                      {user.customer_id.name}
+                      {user.customer_id?.name}
                     </div>
                     <p className="text-xs text-gray-500 font-normal mt-0.5">
                       {user.userRequirements}

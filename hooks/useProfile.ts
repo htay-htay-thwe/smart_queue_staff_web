@@ -1,4 +1,5 @@
 import {
+  changeProfileImage,
   changeShopAddress,
   changeShopEmail,
   changeShopInformation,
@@ -135,6 +136,23 @@ export const useChangeShopInformation = () => {
     onError: (error: any) => {
       toast.error(
         error?.response?.data?.message || "Failed to change shop information",
+        {
+          position: "top-right",
+          style: {
+            color: "red",
+          },
+        },
+      );
+    },
+  });
+};
+
+export const useChangeProfileImage = () => {
+  return useMutation({
+    mutationFn: changeProfileImage,
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to change profile image",
         {
           position: "top-right",
           style: {

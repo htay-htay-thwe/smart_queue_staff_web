@@ -19,6 +19,11 @@ export interface RegisterShopRequest {
   shop_img: File;
 }
 
+export interface ProfileUpdateRequest {
+  shop_id: string;
+  shop_image: File;
+}
+
 export interface ShopData {
   _id: string;
   name: string;
@@ -51,7 +56,13 @@ export interface ShopData {
   __v: number;
 }
 
-export type QueueStatus = "Ready to seat" | "waiting" | "canceled" | "seated" | "finished" | "qr-scanned";
+export type QueueStatus =
+  | "Ready to seat"
+  | "waiting"
+  | "canceled"
+  | "seated"
+  | "finished"
+  | "qr-scanned";
 
 export interface Customer {
   _id: string;
@@ -79,4 +90,23 @@ export interface Queue {
 
   customer_id: Customer;
   shop_id: ShopData;
+}
+
+export interface MostQueueUser {
+  customer_id: string;
+  totalQueues: number;
+  name: string;
+  profileImage?: string;
+}
+
+export interface QueueRecord {
+  id: string;
+  year: string;
+  month: string;
+  totalFinished: number;
+}
+export interface formattedData {
+  month: string;
+  current: number;
+  last: number;
 }
