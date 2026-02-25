@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -10,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Lock, Eye, EyeOff, Check, X, Sparkles } from "lucide-react"
-import { useState } from "react"
+} from "@/components/ui/dialog";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Lock, Eye, EyeOff, Check, X, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 export function EditInformation() {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +43,9 @@ export function EditInformation() {
                 </div>
               </div>
               <DialogTitle className="text-center">
-                <div className="text-2xl font-bold mb-2 animate-fade-in-delay-1">Change Password</div>
+                <div className="text-2xl font-bold mb-2 animate-fade-in-delay-1">
+                  Change Password
+                </div>
                 <p className="text-sm text-white/80 font-normal animate-fade-in-delay-2">
                   Update your password to keep your account secure
                 </p>
@@ -55,7 +57,10 @@ export function EditInformation() {
           <div className="p-8 animate-fade-in-delay-3">
             <FieldGroup className="space-y-6">
               <Field>
-                <Label htmlFor="new-password" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="new-password"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Lock className="w-4 h-4 text-[#157aa2]" />
                   New Password
                 </Label>
@@ -72,13 +77,20 @@ export function EditInformation() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#157aa2] transition-colors duration-200"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </Field>
 
               <Field>
-                <Label htmlFor="confirm-password" className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Label
+                  htmlFor="confirm-password"
+                  className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
+                >
                   <Lock className="w-4 h-4 text-[#157aa2]" />
                   Confirm New Password
                 </Label>
@@ -95,7 +107,11 @@ export function EditInformation() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#157aa2] transition-colors duration-200"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </Field>
@@ -128,6 +144,7 @@ export function EditInformation() {
           <DialogFooter className="px-8 pb-8 pt-0 gap-3">
             <DialogClose asChild>
               <Button
+                type="button"
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
               >
@@ -146,5 +163,5 @@ export function EditInformation() {
         </DialogContent>
       </form>
     </Dialog>
-  )
+  );
 }

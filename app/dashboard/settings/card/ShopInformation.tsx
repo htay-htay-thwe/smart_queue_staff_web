@@ -31,7 +31,7 @@ export default function ShopInformation({ shop }: ShopInformationProps) {
             </div>
           </div>
           <CardAction>
-            <EditShopInformationDialog />
+            <EditShopInformationDialog shop={shop} />
           </CardAction>
         </CardHeader>
 

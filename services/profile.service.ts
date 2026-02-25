@@ -132,3 +132,45 @@ export const changeShopAddress = async ({
   );
   return res.data;
 };
+
+export const changeShopInformation = async ({
+  shop_id,
+  shopTypeId,
+  description,
+  tableTwo,
+  tableFour,
+  tableSix,
+}: {
+  shop_id: string;
+  shopTypeId: string;
+  description: string;
+  tableTwo: number;
+  tableFour: number;
+  tableSix: number;
+}) => {
+  console.log(
+    "Changing shop information for shop_id",
+    shop_id,
+    "with new information",
+    { shopTypeId, description, tableTwo, tableFour, tableSix },
+  );
+  const token = await getAuthCookie();
+  console.log("token", token);
+  const res = await api.patch(
+    `shops/change-shop-information`,
+    {
+      shop_id,
+      shopTypeId,
+      description,
+      tableTwo,
+      tableFour,
+      tableSix,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
+};

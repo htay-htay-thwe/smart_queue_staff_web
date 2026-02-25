@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import { useShopStore } from "@/store/shopStore";
 import { useOtpSendToPhoneNumber } from "@/hooks/useRegister";
 import { useChangePhoneNumber } from "@/hooks/useProfile";
-import { is } from "zod/locales";
 import { Loading } from "@/components/ui/loading";
 
 type ChangePhoneDialogProps = {
@@ -230,6 +229,11 @@ export function ChangePhoneDialog({ phoneNumber }: ChangePhoneDialogProps) {
           <DialogFooter className="px-8 pb-8 pt-0 gap-3">
             <DialogClose asChild>
               <Button
+                onClick={() => {
+                  setIsNewPhoneVerified(false);
+                  setIsOldPhoneVerified(false);
+                  setShowOTPDialog(false);
+                }}
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
               >

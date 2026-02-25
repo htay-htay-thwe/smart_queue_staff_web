@@ -10,7 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -22,25 +27,17 @@ import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useChangeShopInformation } from "@/hooks/useProfile";
+import { ShopData } from "@/types/shopQueue.api.types";
+import { Loading } from "@/components/ui/loading";
+import { useFetchShopTypes } from "@/hooks/useRegister";
 
-const shopTypes = [
-  { value: "", label: "Select your shop type" },
-  { value: "fast-food", label: "🍔 Fast Food" },
-  { value: "asian", label: "🍜 Asian Cuisine" },
-  { value: "european", label: "🍝 European Cuisine" },
-  { value: "cafe", label: "☕ Café & Coffee Shop" },
-  { value: "bakery", label: "🥐 Bakery & Pastries" },
-  { value: "dessert", label: "🍰 Dessert & Sweets" },
-  { value: "seafood", label: "🦞 Seafood" },
-  { value: "vegetarian", label: "🥗 Vegetarian/Vegan" },
-  { value: "bar", label: "🍺 Bar & Pub" },
-  { value: "restaurant", label: "🍽️ Fine Dining Restaurant" },
-  { value: "other", label: "🏪 Other" },
-];
+type EditShopInformationDialogProps = {
+  shop: ShopData;
+};
 
 const formSchema = z
   .object({
-    shopName: z.string().min(1, "* required"),
     shopType: z.string().min(1, "* required"),
     tableTwo: z.coerce.number().int().min(0, "* must be 0 or more"),
     tableFour: z.coerce.number().int().min(0, "* must be 0 or more"),
@@ -60,29 +57,51 @@ const formSchema = z
 
 type FormSchema = z.infer<typeof formSchema>;
 
-export function EditShopInformationDialog() {
+export function EditShopInformationDialog({
+  shop,
+}: EditShopInformationDialogProps) {
   const [descCharCount, setDescCharCount] = useState(0);
+  const [opned, setOpened] = useState(false);
   const maxChars = 500;
-
+  const { mutate: changeShopInformation, isPending } =
+    useChangeShopInformation();
+  const { data: shopTypes = [] } = useFetchShopTypes();
   const form = useForm({
     resolver: zodResolver(formSchema),
     mode: "onSubmit" as const,
     defaultValues: {
-      shopName: "",
-      shopType: "",
-      tableTwo: 0,
-      tableFour: 0,
-      tableSix: 0,
-      description: "",
+      shopType: shop?.shopTypes?._id || "",
+      tableTwo:
+        shop?.tableTypes?.find((t) => t.type === "2-seat")?.capacity || 0,
+      tableFour:
+        shop?.tableTypes?.find((t) => t.type === "4-seat")?.capacity || 0,
+      tableSix:
+        shop?.tableTypes?.find((t) => t.type === "6-seat")?.capacity || 0,
+      description: shop?.description || "",
     },
   });
 
+  console.log("Form default values:", form.getValues());
+
   const onSubmit = (data: FormSchema) => {
     console.log("Shop data:", data);
-    // Handle form submission - integrate with your backend
-    toast.success("Shop information updated successfully!", {
-      description: `${data.shopName} - ${data.shopType}`,
-    });
+    changeShopInformation(
+      {
+        shop_id: shop._id,
+        shopTypeId: data.shopType,
+        description: data.description,
+        tableTwo: data.tableTwo,
+        tableFour: data.tableFour,
+        tableSix: data.tableSix,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Shop information updated successfully");
+          setOpened(false);
+          form.reset(data);
+        },
+      },
+    );
   };
 
   const onError = (errors: any) => {
@@ -93,7 +112,7 @@ export function EditShopInformationDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={opned} onOpenChange={(open) => setOpened(open)}>
       <DialogTrigger asChild>
         <Button className="bg-linear-to-r from-emerald-500 to-teal-600 text-white px-6 h-10 rounded-xl transition-all duration-300 hover:from-emerald-600 hover:to-teal-700 hover:scale-105 shadow-md hover:shadow-lg">
           Edit
@@ -128,34 +147,6 @@ export function EditShopInformationDialog() {
           <div className="p-8 animate-fade-in-delay-3">
             <ScrollArea className="h-[60vh] pr-4">
               <FieldGroup className="space-y-6 pr-2">
-                {/* Shop Title */}
-                <Controller
-                  name="shopName"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel
-                        htmlFor="shopName"
-                        className="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2"
-                      >
-                        <Store className="w-4 h-4 text-emerald-500" />
-                        Shop Title
-                      </FieldLabel>
-                      <Input
-                        id="shopName"
-                        {...field}
-                        type="text"
-                        aria-invalid={fieldState.invalid}
-                        placeholder="Enter shop name"
-                        className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
                 {/* Shop Type */}
                 <Controller
                   name="shopType"
@@ -172,12 +163,19 @@ export function EditShopInformationDialog() {
                       <select
                         id="shopType"
                         {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
                         aria-invalid={fieldState.invalid}
                         className="flex h-12 w-full items-center justify-between rounded-xl border-2 border-gray-200 bg-transparent px-3 py-2 text-sm shadow-xs ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300"
                       >
-                        {shopTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.label}
+                        {(shopTypes as any[]).map((type) => (
+                          <option
+                            key={type._id}
+                            value={type._id}
+                            selected={type._id === field.value}
+                          >
+                            {type.shopTypeName}
                           </option>
                         ))}
                       </select>
@@ -253,8 +251,10 @@ export function EditShopInformationDialog() {
                             min={0}
                             aria-invalid={fieldState.invalid}
                             placeholder="0"
-                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                            value={(field.value as number) || 0}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber)
+                            }
+                            value={(field.value as number)}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -282,8 +282,10 @@ export function EditShopInformationDialog() {
                             min={0}
                             aria-invalid={fieldState.invalid}
                             placeholder="0"
-                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                            value={(field.value as number) || 0}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber )
+                            }
+                            value={(field.value as number)}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -311,8 +313,10 @@ export function EditShopInformationDialog() {
                             min={0}
                             aria-invalid={fieldState.invalid}
                             placeholder="0"
-                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                            value={(field.value as number) || 0}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber)
+                            }
+                            value={(field.value as number)}
                             className="h-12 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
                           />
                           {fieldState.invalid && (
@@ -332,6 +336,9 @@ export function EditShopInformationDialog() {
             <DialogClose asChild>
               <Button
                 type="button"
+                onClick={() => {
+                  form.reset()
+                }}
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
               >
@@ -348,6 +355,7 @@ export function EditShopInformationDialog() {
             </Button>
           </DialogFooter>
         </form>
+        {isPending && <Loading />}
       </DialogContent>
     </Dialog>
   );

@@ -135,6 +135,9 @@ export function EditCompanyName({ id, name }: EditCompanyNameProps) {
           <DialogFooter className="px-8 pb-8 pt-0 gap-3">
             <DialogClose asChild>
               <Button
+                onClick={() => {
+                  form.reset();
+                }}
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-2 hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
               >

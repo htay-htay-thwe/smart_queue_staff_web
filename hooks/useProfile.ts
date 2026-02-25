@@ -1,6 +1,7 @@
 import {
   changeShopAddress,
   changeShopEmail,
+  changeShopInformation,
   changeShopName,
   changeShopPassword,
   changeShopPhoneNumber,
@@ -116,6 +117,24 @@ export const useChangeAddress = () => {
     onError: (error: any) => {
       toast.error(
         error?.response?.data?.message || "Failed to change address",
+        {
+          position: "top-right",
+          style: {
+            color: "red",
+          },
+        },
+      );
+    },
+  });
+};
+
+export const useChangeShopInformation = () => {
+  return useMutation({
+    mutationFn: changeShopInformation,
+
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to change shop information",
         {
           position: "top-right",
           style: {

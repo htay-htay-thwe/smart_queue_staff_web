@@ -10,26 +10,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { MapPin, Check, X, Globe, Navigation, Edit } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import { MapPin, Check, X } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import EditMapPicker from "./editMapPicker";
 import { useChangeAddress } from "@/hooks/useProfile";
 import { useShopStore } from "@/store/shopStore";
 import { Loading } from "@/components/ui/loading";
+import dynamic from "next/dynamic";
+const EditMapPicker = dynamic(() => import("./EditMapPicker"), { ssr: false });
 
 const formSchema = z.object({
   fullAddress: z.string().min(1, "*required"),
@@ -45,17 +36,6 @@ const formSchema = z.object({
 });
 
 type FormSchema = z.infer<typeof formSchema>;
-
-const mapContainerStyle = {
-  width: "100%",
-  height: "300px",
-  borderRadius: "12px",
-};
-
-const defaultCenter = {
-  lat: 13.7563,
-  lng: 100.5018,
-};
 
 type EditAddressDialogProps = {
   id: string;
@@ -186,6 +166,14 @@ export function EditAddressDialog({
           {/* Form content */}
           <div className="p-8 animate-fade-in-delay-3">
             <EditMapPicker location={location} setLocation={setLocation} />
+            <div>
+              <label
+                htmlFor="fullAddress"
+                className="block text-sm font-medium text-gray-700 mt-6 mb-2"
+              >
+                {location.fullAddress}
+              </label>
+            </div>
           </div>
 
           {/* Footer with buttons */}
