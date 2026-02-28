@@ -17,6 +17,15 @@ export default function DashboardLayout({
   const addNotification = useNotiStore((s) => s.addNotification);
   console.log("Shop data in DashboardLayout:", shopData._id);
   const socketRef = useRef<Socket | null>(null);
+  // For test button feedback
+  const testSocket = () => {
+    if (socketRef.current && shopData?._id) {
+      socketRef.current.emit("events", shopData._id.toString());
+      alert("Test: emitted 'events' with shop ID " + shopData._id);
+    } else {
+      alert("Socket not connected or shop ID missing");
+    }
+  };
 
   useEffect(() => {
     if (!shopData?._id) return;
@@ -28,7 +37,7 @@ export default function DashboardLayout({
 
       // Debug: Log all incoming events
       socketRef.current.onAny((event, ...args) => {
-        console.log("[Socket] Event:", event, args);
+        console.log(" backend", event, args);
       });
 
       socketRef.current.on("connect", () => {
@@ -63,6 +72,19 @@ export default function DashboardLayout({
         <div className="p-4 justify-between flex items-center border-b bg-white sticky top-0 z-10 shadow-sm">
           <SidebarTrigger className="hover:bg-gray-100 " />
           <SearchItem />
+        </div>
+
+        {/* TEST BUTTON: Remove in production */}
+        <div className="p-2 bg-yellow-100 text-yellow-900 flex items-center gap-2">
+          <button
+            style={{ padding: '4px 12px', border: '1px solid #eab308', borderRadius: 4, background: '#fef9c3', cursor: 'pointer' }}
+            onClick={testSocket}
+          >
+            Test Join Room
+          </button>
+          <span style={{ fontSize: 12 }}>
+            (Click to re-emit 'events' with shop ID: {shopData?._id || 'N/A'})
+          </span>
         </div>
 
         <div className="relative min-h-[calc(100vh-64px)]">
