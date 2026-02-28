@@ -18,13 +18,16 @@ import { toast } from "sonner";
 export const useOtpSendToPhoneNumber = () => {
   return useMutation({
     mutationFn: sendOtpToPhoneNumber,
-    onSuccess: () => {
-      toast.success("Otp successfully sent to Your phoneNumber!", {
-        position: "top-right",
-        style: {
-          color: "green",
+    onSuccess: (data) => {
+      toast.success(
+        `Otp successfully sent to Your phoneNumber! ${data.data.data.message}`,
+        {
+          position: "top-right",
+          style: {
+            color: "green",
+          },
         },
-      });
+      );
     },
 
     onError: (error: any) => {

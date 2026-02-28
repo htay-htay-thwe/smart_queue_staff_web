@@ -20,7 +20,11 @@ import { useChangeAddress } from "@/hooks/useProfile";
 import { useShopStore } from "@/store/shopStore";
 import { Loading } from "@/components/ui/loading";
 import dynamic from "next/dynamic";
-const EditMapPicker = dynamic(() => import("./EditMapPicker"), { ssr: false });
+
+const EditMapPicker = dynamic(
+  () => import("./EditMapPicker").then((mod) => mod.default),
+  { ssr: false },
+);
 
 const formSchema = z.object({
   fullAddress: z.string().min(1, "*required"),

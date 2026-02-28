@@ -3,12 +3,59 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSideBar from "./sidebar/AppSideBar";
 import SearchItem from "./sidebar/SeachItem";
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+import { useShopStore } from "@/store/shopStore";
+import { useNotiStore } from "@/store/notiStore";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const shopData = useShopStore((s) => s.shop);
+  const addNotification = useNotiStore((s) => s.addNotification);
+  console.log("Shop data in DashboardLayout:", shopData._id);
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (!shopData?._id) return;
+
+    if (!socketRef.current) {
+      socketRef.current = io("https://smart-q-backend-nestjs.onrender.com", {
+        transports: ["websocket"],
+      });
+
+      // Debug: Log all incoming events
+      socketRef.current.onAny((event, ...args) => {
+        console.log("[Socket] Event:", event, args);
+      });
+
+      socketRef.current.on("connect", () => {
+        console.log("Connected:", socketRef.current?.id);
+        socketRef.current?.emit("events", shopData._id.toString());
+      });
+
+      socketRef.current.on("freeTable", (data) => {
+        console.log("Received freeTable:", data);
+
+        addNotification({
+          title: "One Table is Free",
+          message: data.message,
+        });
+      });
+
+      socketRef.current.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
+    }
+
+    return () => {
+      // DO NOT disconnect here
+      // Let socket live during app lifetime
+    };
+  }, [shopData._id]);
+
   return (
     <SidebarProvider>
       <AppSideBar />

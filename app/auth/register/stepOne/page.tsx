@@ -28,7 +28,7 @@ const formSchema = z.object({
   phoneNumber: z
     .string()
     .min(1, "* required")
-    .regex(/^[0-9]+$/, "* only numbers allowed"),
+    .regex(/^\+[1-9]\d{7,14}$/, "* invalid phone number"),
   password: z.string().min(8, "* minimum 8 characters required"),
 });
 

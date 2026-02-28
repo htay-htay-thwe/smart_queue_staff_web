@@ -3,7 +3,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -16,7 +15,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -24,12 +22,13 @@ import {
 import FilterBtn from "./FilterBtn";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
+import Countdown from "react-countdown";
 import Link from "next/link";
 import PaginationSeatAssign from "../../queue/card/PaginationSeatAssign";
 import { useFetchQueue } from "@/hooks/useQueue";
 import { useShopStore } from "@/store/shopStore";
 import { useState } from "react";
+import { Clock } from "lucide-react";
 
 export default function LiveTable() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -146,12 +145,35 @@ export default function LiveTable() {
                       : "-"}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {queue.estimated_wait_time}
+                    <Clock className="inline mr-1 mb-1 h-4 w-4 self-start" />
+                    <Countdown
+                      date={
+                        new Date(queue.createdAt).getTime() +
+                        queue.estimated_wait_time * 60 * 1000
+                      }
+                      renderer={({ total }) => {
+                        if (total <= 0) return <span>0 min</span>;
+
+                        const totalMinutes = Math.floor(total / (1000 * 60));
+                        const hours = Math.floor(totalMinutes / 60);
+                        const minutes = totalMinutes % 60;
+
+                        if (hours >= 1) {
+                          return (
+                            <span>
+                              {hours} h {minutes} min
+                            </span>
+                          );
+                        }
+
+                        return <span>{minutes} min</span>;
+                      }}
+                    />
                   </TableCell>
                   {pathname === "/dashboard/queue" && (
                     <TableCell className="text-center">
                       <Link href={`/dashboard/seat-Place/${queue._id}`}>
-                        <Button className="bg-[#1c7aa5] transition-all duration-300 hover:bg-[#297a9f] hover:scale-105">
+                        <Button disabled={queue.status == "waiting"} className="bg-[#1c7aa5] transition-all duration-300 hover:bg-[#297a9f] hover:scale-105">
                           Assign Seat
                         </Button>
                       </Link>

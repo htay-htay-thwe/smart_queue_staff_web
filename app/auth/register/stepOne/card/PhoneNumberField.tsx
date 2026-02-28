@@ -44,7 +44,7 @@ export default function PhoneNumberField({
                 field.onChange(e);
               }}
               aria-invalid={fieldState.invalid}
-              placeholder="09********"
+              placeholder="+66 9********"
               autoComplete="off"
               disabled={isVerified}
               className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 text-base
