@@ -120,14 +120,17 @@ smart_queue_staff_web/
 |   |   +-- register/           # 3-step shop registration wizard
 |   +-- dashboard/              # Protected dashboard routes
 |       +-- layout.tsx          # Socket.IO connection + global search setup
+|       +-- components/         # Shared dashboard UI components
+|       |   +-- NotificationBell.tsx  # In-app notification bell & alert panel
 |       +-- dashboard/          # Analytics & live table overview
 |       +-- queue/              # Active queue assignment management
 |       +-- dining/             # Currently seated (dining) customers
 |       +-- history/            # Queue history log with date filters
 |       +-- seat-Place/         # Seat & table type configuration
-|       +-- report/             # Business reports
+|       |   +-- [id]/           # Dynamic route: seat details per table type
+|       +-- report/             # Business reports (in active development)
 |       +-- settings/           # Account, shop & address settings
-|       +-- sidebar/            # Navigation sidebar
+|       +-- sidebar/            # Navigation sidebar & search input
 +-- components/ui/              # Reusable shadcn/ui components
 +-- services/                   # API service layer (auth, profile, queue)
 +-- hooks/                      # Custom React hooks (useQueue, useProfile, etc.)
@@ -194,25 +197,34 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 
 ## Pages & Modules
 
+### Landing
+
+| Route | Description |
+|---|---|
+| `/` | Root entry point — redirects to the appropriate auth or dashboard route |
+
 ### Authentication
 
 | Route | Description |
 |---|---|
 | `/auth/loginPage` | Staff login with email and password |
 | `/auth/loginPage/forgotPassword` | Password recovery flow |
-| `/auth/register` | Multi-step shop registration (OTP -> Business Info -> Table Setup) |
+| `/auth/register` | Multi-step registration wizard shell with `StepIndicator` progress bar |
+| `/auth/register/stepOne` | **Step 1** — Phone number entry, SMS OTP verification, email field, email OTP verification, and initial password creation |
+| `/auth/register/stepTwo` | **Step 2** — Business location selection via interactive map (`MapPicker`) and shop profile image upload |
+| `/auth/register/stepThree` | **Step 3** — Shop description, shop type selection, and table type & seating capacity configuration |
 
 ### Dashboard
 
 | Route | Description |
 |---|---|
-| `/dashboard/dashboard` | Main view: pie charts, queue records, live table status, and top customers |
-| `/dashboard/queue` | Assign and manage the active customer queue |
-| `/dashboard/dining` | Track all currently seated (dining) customers |
-| `/dashboard/history` | Full queue history with date-range filters |
-| `/dashboard/seat-Place/:id` | View and scroll through seat configurations per table type |
+| `/dashboard/dashboard` | Main view: queue pie chart, area chart by time, queue records, live table status, and most-active customers |
+| `/dashboard/queue` | View the active customer waiting list and assign customers to available tables |
+| `/dashboard/dining` | Track all currently seated (dining) customers with table and timestamp info |
+| `/dashboard/history` | Full queue history log with date-range filters (Today, Yesterday, Last 7 Days, Last 30 Days) |
+| `/dashboard/seat-Place/:id` | Dynamic route — scrollable seat layout and configuration for a specific table type |
 | `/dashboard/report` | Business reports *(in active development)* |
-| `/dashboard/settings` | Profile photo, account info, address, and shop configuration |
+| `/dashboard/settings` | Manage profile photo, account info, company name, address (map picker), email, phone, and password |
 
 ---
 
