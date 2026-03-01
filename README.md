@@ -177,9 +177,6 @@ Create a `.env.local` file in the project root:
 ```env
 # Backend REST API base URL
 NEXT_PUBLIC_API_URL=https://smart-q-backend-nestjs.onrender.com
-
-# Google Maps API key (used in address picker during registration & settings)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
 
 ---
