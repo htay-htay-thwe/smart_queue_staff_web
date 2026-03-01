@@ -18,6 +18,8 @@ export const useFetchQueue = (shopId: string) => {
     queryFn: () => getQueue(shopId),
     staleTime: 0,
     refetchOnWindowFocus: true,
+    refetchInterval: 30_000,          // fallback poll every 30s
+    refetchIntervalInBackground: true, // keep polling even when tab is backgrounded
   });
 };
 
@@ -34,7 +36,6 @@ export const useAssignTable = (router: ReturnType<typeof useRouter>) => {
       });
       queryClient.invalidateQueries({ queryKey: ["queue"] });
       router.push("/dashboard/queue");
-      router.refresh();
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to assign table", {
@@ -61,17 +62,29 @@ export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: releaseTableAndUpdateQueue,
-    onSuccess: (data) => {
+    onSuccess: (_data, variables) => {
       toast.success("One Table Freed!", {
         position: "top-right",
         style: {
           color: "green",
         },
       });
+
+      // Instantly remove the freed table from the cache so the queue page
+      // renders immediately on navigation without waiting for a re-fetch.
+      queryClient.setQueryData(
+        ["queue", variables.shop_id],
+        (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return old.filter((q: any) => q.table_no !== variables.table_no);
+        },
+      );
+
+      // Background re-sync to get the server's latest state
       queryClient.invalidateQueries({ queryKey: ["queue"] });
-      console.log("released", data);
+      queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
+      queryClient.invalidateQueries({ queryKey: ["queueHistory"] });
       router.push("/dashboard/queue");
-      router.refresh();
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to release table", {

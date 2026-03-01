@@ -3,10 +3,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSideBar from "./sidebar/AppSideBar";
 import SearchItem from "./sidebar/SeachItem";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useShopStore } from "@/store/shopStore";
 import { useNotiStore } from "@/store/notiStore";
+import { useQueryClient } from "@tanstack/react-query";
+import Mark from "mark.js";
 
 export default function DashboardLayout({
   children,
@@ -14,18 +16,34 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const shopData = useShopStore((s) => s.shop);
-  const addNotification = useNotiStore((s) => s.addNotification);
-  console.log("Shop data in DashboardLayout:", shopData._id);
+  const queryClient = useQueryClient();
   const socketRef = useRef<Socket | null>(null);
-  // For test button feedback
-  const testSocket = () => {
-    if (socketRef.current && shopData?._id) {
-      socketRef.current.emit("events", shopData._id.toString());
-      alert("Test: emitted 'events' with shop ID " + shopData._id);
-    } else {
-      alert("Socket not connected or shop ID missing");
-    }
-  };
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const markInstance = new Mark(contentRef.current);
+    markInstance.unmark({
+      done: () => {
+        if (searchQuery.trim()) {
+          markInstance.mark(searchQuery.trim(), {
+            separateWordSearch: false,
+            className: "bg-yellow-300 text-black rounded px-0.5",
+            done: () => {
+              const firstMark = contentRef.current?.querySelector("mark");
+              if (firstMark) {
+                firstMark.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+            },
+          });
+        }
+      },
+    });
+  }, [searchQuery]);
 
   useEffect(() => {
     if (!shopData?._id) return;
@@ -48,10 +66,37 @@ export default function DashboardLayout({
       socketRef.current.on("freeTable", (data) => {
         console.log("Received freeTable:", data);
 
-        addNotification({
+        const table_type_name = data?.table_type_name ?? null;
+
+        // Read fresh addNotification from store to avoid stale closure
+        useNotiStore.getState().addNotification({
+          type: "seat",
           title: "One Table is Free",
-          message: data.message,
+          message: table_type_name
+            ? `A <strong>${table_type_name}</strong> table has been freed. Please check the queue.`
+            : "A table has been freed. Please check the queue status.",
         });
+
+        queryClient.invalidateQueries({ queryKey: ["queue"] });
+        queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
+      });
+
+      socketRef.current.on("newCustomerQueue", (data) => {
+        console.log("Received newCustomerQueue:", data);
+
+        const table_type_name = data?.table_type_name ?? null;
+
+        // Read fresh addNotification from store to avoid stale closure
+        useNotiStore.getState().addNotification({
+          type: "queue",
+          title: "New Queue Customer in Queue",
+          message: table_type_name
+            ? `A customer has joined the <strong>${table_type_name}</strong> table queue. Please check the queue status.`
+            : "A customer has joined the queue. Please check the queue status.",
+        });
+
+        queryClient.invalidateQueries({ queryKey: ["queue"] });
+        queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
       });
 
       socketRef.current.on("disconnect", () => {
@@ -63,7 +108,7 @@ export default function DashboardLayout({
       // DO NOT disconnect here
       // Let socket live during app lifetime
     };
-  }, [shopData._id]);
+  }, [shopData._id, queryClient]);
 
   return (
     <SidebarProvider>
@@ -71,24 +116,13 @@ export default function DashboardLayout({
       <main className="w-full">
         <div className="p-4 justify-between flex items-center border-b bg-white sticky top-0 z-10 shadow-sm">
           <SidebarTrigger className="hover:bg-gray-100 " />
-          <SearchItem />
-        </div>
-
-        {/* TEST BUTTON: Remove in production */}
-        <div className="p-2 bg-yellow-100 text-yellow-900 flex items-center gap-2">
-          <button
-            style={{ padding: '4px 12px', border: '1px solid #eab308', borderRadius: 4, background: '#fef9c3', cursor: 'pointer' }}
-            onClick={testSocket}
-          >
-            Test Join Room
-          </button>
-          <span style={{ fontSize: 12 }}>
-            (Click to re-emit 'events' with shop ID: {shopData?._id || 'N/A'})
-          </span>
+          <SearchItem onSearch={setSearchQuery} />
         </div>
 
         <div className="relative min-h-[calc(100vh-64px)]">
-          <div className="pb-20">{children}</div>
+          <div className="pb-20" ref={contentRef}>
+            {children}
+          </div>
 
           {/* Footer */}
           <div className="absolute  bottom-0 left-0 right-0 flex items-center justify-center p-10 text-sm text-muted-foreground">

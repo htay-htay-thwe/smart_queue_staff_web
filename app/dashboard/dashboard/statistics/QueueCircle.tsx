@@ -5,30 +5,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Label } from "recharts";
 
 type QueueCircleProps = {
   id: string;
+  acceptedPercentage: number;
+  pendingPercentage: number;
+  canceledPercentage: number;
 };
 
-export default function QueueCircle({ id }: QueueCircleProps) {
-  const fectHistory = useFetchQueueHistory(id);
-  const fetchQueue = useFetchQueue(id);
-  console.log("Queue history data in QueueCircle:", fectHistory.data);
-  const seated =
-    fetchQueue.data?.filter((item) => item.status === "seated").length || 0;
-  const acceptedCount =
-    (fectHistory.data?.filter((item) => item.status === "finished").length ||
-      0) + seated;
-  const pendingCount =
-    fectHistory.data?.filter((item) => item.status === "waiting").length || 0;
-  const canceledCount =
-    fectHistory.data?.filter((item) => item.status === "canceled").length || 0;
-
-  const totalCount = acceptedCount + pendingCount + canceledCount;
-  const acceptedPercentage =
-    totalCount > 0 ? (acceptedCount / totalCount) * 100 : 0;
-  console.log("Accepted percentage:", acceptedPercentage);
-  const pendingPercentage =
-    totalCount > 0 ? (pendingCount / totalCount) * 100 : 0;
-  const canceledPercentage =
-    totalCount > 0 ? (canceledCount / totalCount) * 100 : 0;
+export default function QueueCircle({ acceptedPercentage, pendingPercentage, canceledPercentage }: QueueCircleProps) {
 
   const data = [
     {

@@ -1,6 +1,6 @@
 "use client";
 
-import {  Users } from "lucide-react";
+import { Users } from "lucide-react";
 import LiveTable from "../dashboard/card/LiveTable";
 
 export default function Queue() {

@@ -1,23 +1,9 @@
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+"use client";
+
 import profile from "@/asset/image/default.png";
 import Image from "next/image";
-import {
-  Clock,
-  Calendar,
-  Hash,
-  Armchair,
-  CheckCircle2,
-  User,
-} from "lucide-react";
+import { Clock, Armchair, Utensils, LogOut } from "lucide-react";
 import { Queue } from "@/types/shopQueue.api.types";
-import { Button } from "@/components/ui/button";
-import { use } from "react";
 import { useRouter } from "next/navigation";
 import { useReleaseTable } from "@/hooks/useQueue";
 
@@ -26,145 +12,130 @@ interface OneCardProps {
 }
 
 export default function OneCard({ data }: OneCardProps) {
-  console.log("OneCard received data:", data, Array.isArray(data));
   const router = useRouter();
   const { mutate: releaseTableMutate, isPending } = useReleaseTable(router);
+
   if (!Array.isArray(data) || data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-4">
-        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-          <Calendar className="w-12 h-12 text-gray-400" />
+      <div className="flex flex-col items-center justify-center py-20 px-4">
+        <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-5 shadow-inner">
+          <Utensils className="w-10 h-10 text-slate-300" />
         </div>
-        <h3 className="text-xl font-bold text-gray-700 mb-2">
-          No Records Found
+        <h3 className="text-xl font-bold text-slate-600 mb-2">
+          No Active Diners
         </h3>
-        <p className="text-gray-500 text-sm text-center max-w-md">
-          No Dining table matches the selected date filter. Try selecting a
-          different time period.
+        <p className="text-slate-400 text-sm text-center max-w-sm">
+          All tables are currently free.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {data.map((user, index) => (
-        <Card
+        <div
           key={index}
-          className="w-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group border-2 border-gray-100 hover:border-[#157aa2]/30 bg-linear-to-br from-white to-gray-50/50"
+          className="group relative bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
         >
-          <CardHeader className="pb-4 pt-5">
-            {/* User Info */}
-            <CardTitle className="mb-4">
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-13 h-13">
-                    <Image
-                      src={user.customer_id?.profileImg || profile}
-                      alt="Profile"
-                      width={52}
-                      height={52}
-                      className="rounded-full ring-2 ring-[#157aa2]/20 group-hover:ring-[#157aa2] transition-all duration-300 object-cover w-full h-full"
-                    />
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                      <CheckCircle2 className="w-3 h-3 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg text-gray-800 flex items-center gap-2">
-                      {user.customer_id.name}
-                    </div>
-                    <p className="text-xs text-gray-500 font-normal mt-0.5">
-                      {user.userRequirements}
-                    </p>
-                  </div>
+          <div className="p-5">
+            {/* Table label + live pill */}
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#157aa2]/10 to-[#157aa2]/5 rounded-2xl flex flex-col items-center justify-center border border-[#157aa2]/20 shadow-inner">
+                  <Armchair className="w-5 h-5 text-[#157aa2] mb-0.5" />
                 </div>
-                {user?.status == "seated" && (
-                  <div className="mt-2">
-                    <Button
-                      className="bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] px-8 py-4 rounded-md text-base font-semibold shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-105"
-                      onClick={() =>
-                        releaseTableMutate({
-                          shop_id: user.shop_id._id,
-                          table_no: user.table_no ?? "",
-                          table_type_id: user.table_type_id ?? "",
-                        })
-                      }
-                      disabled={isPending}
-                    >
-                      Free Table
-                    </Button>
-                  </div>
+                <div>
+                  <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">
+                    Table
+                  </p>
+                  <p className="text-2xl font-black text-slate-800 leading-tight">
+                    {user.table_no}
+                  </p>
+                </div>
+              </div>
+
+              {/* Live badge */}
+              <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 mt-1">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-xs font-bold text-emerald-600">
+                  LIVE
+                </span>
+              </div>
+            </div>
+
+            {/* Customer info block */}
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl mb-4 border border-slate-100">
+              <div className="relative shrink-0">
+                <Image
+                  src={user.customer_id?.profileImg || profile}
+                  alt="Profile"
+                  width={44}
+                  height={44}
+                  className="rounded-xl object-cover ring-2 ring-white shadow-sm w-11 h-11"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-slate-800 text-sm truncate">
+                  {user.customer_id?.name}
+                </p>
+                {user.userRequirements && (
+                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                    {user.userRequirements}
+                  </p>
                 )}
               </div>
-            </CardTitle>
-
-            <CardDescription className="mb-0 space-y-3">
-              {/* Queue and Seat Info */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Queue Number */}
-                <div className="bg-linear-to-br from-blue-50 to-blue-100/50 p-3 rounded-xl border border-blue-200 group-hover:border-blue-300 transition-all duration-300">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Hash className="w-3.5 h-3.5 text-[#157aa2]" />
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      Queue
-                    </span>
-                  </div>
-                  <div className="text-base font-bold text-[#157aa2]">
-                    {user.queue_number}
-                  </div>
-                </div>
-
-                {/* Seat Number */}
-                <div className="bg-linear-to-br from-green-50 to-green-100/50 p-3 rounded-xl border border-green-200 group-hover:border-green-300 transition-all duration-300">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Armchair className="w-3.5 h-3.5 text-green-600" />
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      Seat
-                    </span>
-                  </div>
-                  <div className="text-base font-bold text-green-600">
-                    {user.table_no}
-                  </div>
-                </div>
+              <div className="shrink-0 text-center pl-2 border-l border-slate-200">
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                  Queue
+                </p>
+                <p className="text-base font-black text-[#157aa2]">
+                  #{user.queue_number}
+                </p>
               </div>
+            </div>
 
-              {/* Date and Time */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-purple-600" />
-                  </div>
-                  <span className="font-medium">
-                    {user.updatedAt
-                      ? new Date(user.updatedAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "-"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <Calendar className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <span className="font-medium">
-                      {user.updatedAt
-                        ? new Date(user.updatedAt).toLocaleDateString()
-                        : "-"}
-                    </span>
-                  </div>
-                  {/* Status Badge Inline */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 text-[#157aa2] rounded-lg shadow-md font-semibold text-xs">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {user.status}
-                  </div>
-                </div>
-              </div>
-            </CardDescription>
-          </CardHeader>
-        </Card>
+            {/* Time seated */}
+            <div className="flex items-center gap-2 mb-4 px-1">
+              <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="text-xs text-slate-500 font-medium">
+                Seated at&nbsp;
+                <span className="text-slate-700 font-bold">
+                  {user.updatedAt
+                    ? new Date(user.updatedAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "—"}
+                </span>
+              </span>
+              <span className="ml-auto text-xs text-slate-400">
+                {user.updatedAt
+                  ? new Date(user.updatedAt).toLocaleDateString([], {
+                      day: "2-digit",
+                      month: "short",
+                    })
+                  : ""}
+              </span>
+            </div>
+
+            {/* Free Table button */}
+            <button
+              onClick={() =>
+                releaseTableMutate({
+                  shop_id: user.shop_id._id,
+                  table_no: user.table_no ?? "",
+                  table_type_id: user.table_type_id ?? "",
+                })
+              }
+              disabled={isPending}
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-rose-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              {isPending ? "Releasing..." : "Free Table"}
+            </button>
+          </div>
+        </div>
       ))}
     </div>
   );

@@ -113,7 +113,7 @@ export default function SeatScroll({
               {/* Seats Grid */}
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4 mb-6">
                 {Array.from({ length: value.capacity }).map((_, i) => {
-                  const id = `${key}-${i}`;
+                  const id = `${key}-${i+1}`;
                   const isOccupied = occupiedSeats.has(id);
                   const isSelected = selected?.id === id;
                   // table_type_id is value.table_type_id
