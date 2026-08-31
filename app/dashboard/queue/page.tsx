@@ -2,24 +2,28 @@
 
 import { Users } from "lucide-react";
 import LiveTable from "../dashboard/card/LiveTable";
+import GenerateQrDialog from "./card/GenerateQrDialog";
 
 export default function Queue() {
   return (
     <div className="p-6">
       {/* Modern Header */}
       <div className="mb-6 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-linear-to-br from-[#157aa2] to-[#1C7AA5] rounded-xl flex items-center justify-center shadow-lg">
-            <Users className="w-7 h-7 text-white" />
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-linear-to-br from-[#157aa2] to-[#1C7AA5] rounded-xl flex items-center justify-center shadow-lg">
+              <Users className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">
+                Queue Management
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Assign and manage customer queues
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              Queue Management
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Assign and manage customer queues
-            </p>
-          </div>
+          <GenerateQrDialog />
         </div>
       </div>
       <div className="animate-fade-in-delay-1">
