@@ -24,12 +24,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const [text, setText] = useState(sentences[0]);
-  const [isClient, setIsClient] = useState(false);
-
   useEffect(() => {
-    // Mark as client-side mounted
-    setIsClient(true);
-
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * sentences.length);
       setText(sentences[randomIndex]);
@@ -39,8 +34,10 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 md:gap-10">
-      <div className="hidden md:flex flex-col  items-center justify-center bg-[#e5f5f9] gap-4">
+    <div className="grid min-h-screen grid-cols-1 bg-slate-50 lg:grid-cols-[0.9fr_1.1fr]">
+      <aside className="relative hidden overflow-hidden bg-[#0f6587] lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-5 lg:p-12">
+        <div className="absolute -left-24 top-12 size-72 rounded-full bg-cyan-300/15 blur-3xl" />
+        <div className="absolute -bottom-20 right-0 size-80 rounded-full bg-blue-900/25 blur-3xl" />
         <div className="relative w-[220px] h-[220px]">
           <Image
             src={Main}
@@ -51,12 +48,13 @@ export default function AuthLayout({
           />
         </div>
 
-        <p className="text-lg font-sans font-medium text-black text-center max-w-xs transition-opacity duration-500">
+        <p className="relative max-w-sm text-center text-lg font-medium leading-8 text-white/90 transition-opacity duration-500">
           {text}
         </p>
-      </div>
+        <p className="relative text-sm text-white/60">Built for calmer, faster service.</p>
+      </aside>
 
-      <main> {children}</main>
+      <main className="relative min-w-0 bg-[radial-gradient(circle_at_top_right,rgba(21,122,162,0.12),transparent_35%)]">{children}</main>
       <Toaster />
     </div>
   );

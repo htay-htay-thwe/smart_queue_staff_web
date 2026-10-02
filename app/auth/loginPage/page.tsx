@@ -17,7 +17,7 @@ export default function loginPage() {
             <Sparkles className="w-8 h-8" />
             Welcome Back
           </h1>
-          <p className="text-white/80 text-sm">
+          <p className="text-sm text-slate-500">
             Sign in to manage your smart queue
           </p>
         </div>
@@ -29,7 +29,7 @@ export default function loginPage() {
 
         {/* Footer */}
         <div className="text-center mt-6 animate-fade-in-delay-2">
-          <p className="text-white/70 text-sm">
+          <p className="text-sm text-slate-400">
             © 2026 Smart Queue. All rights reserved.
           </p>
         </div>

@@ -5,25 +5,16 @@ import MostQueueUser from "./card/MostQueueUser";
 import QueuePie from "./card/QueuePie";
 import { QueueRecord } from "./statistics/QueueRecord";
 import { BarChart3 } from "lucide-react";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export default function Dashboard() {
   const userData = useShopStore((s) => s.shop);
   console.log("Dashboard userData", userData);
   return (
-    <div className="flex flex-col md:flex-row">
-      <div className="p-6 bg-[#F8F7F1] min-h-screen lg:w-1/3 w-full">
-        {/* Modern Header */}
-        <div className="mb-6 animate-fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-linear-to-br from-[#157aa2] to-[#1C7AA5] rounded-xl flex items-center justify-center shadow-lg">
-              <BarChart3 className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Today's Statistics</h1>
-              <p className="text-xs text-gray-500 mt-0.5">Real-time queue analytics and insights</p>
-            </div>
-          </div>
-        </div>
+    <div className="page-shell">
+      <PageHeader title="Today’s Overview" description="See live queue activity, table availability, and service trends." icon={BarChart3} eyebrow="Dashboard" />
+      <div className="grid gap-6 xl:grid-cols-[minmax(300px,0.8fr)_minmax(0,1.7fr)]">
+      <div className="flex w-full flex-col gap-5">
         <div className="flex flex-col gap-5">
           <div className="animate-fade-in-delay-1">
             <QueuePie id={userData._id} />
@@ -34,7 +25,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="p-6 min-h-screen w-full lg:w-2/3">
+      <div className="w-full">
         <div className="flex flex-col gap-5">
           <div className="animate-fade-in-delay-1">
             <LiveTable />
@@ -43,6 +34,7 @@ export default function Dashboard() {
             <QueueRecord id={userData._id} createdAt={userData.createdAt} />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

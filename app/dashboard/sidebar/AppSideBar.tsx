@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -47,10 +47,10 @@ export default function AppSideBar() {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const router = require("next/navigation").useRouter();
+  const router = useRouter();
 
   return (
-    <Sidebar collapsible="icon" className="bg-[#157AA2] border-r-0">
+    <Sidebar collapsible="icon" className="border-r-0 bg-[#116c8f]">
       <SidebarHeader className={isCollapsed ? "p-4" : "p-6 pb-4"}>
         {isCollapsed ? (
           <Image
@@ -74,7 +74,7 @@ export default function AppSideBar() {
       <SidebarContent className={isCollapsed ? "px-0" : "px-4"}>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className={isCollapsed ? "gap-6" : "gap-2"}>
+            <SidebarMenu className="gap-2">
               <TooltipProvider delayDuration={0}>
                 {menuItems.map((item) => {
                   const Icon = item.icon;
@@ -89,12 +89,12 @@ export default function AppSideBar() {
                             className={`
                                 ${
                                   isActive
-                                    ? "bg-black/30 border-l-4 border-white"
-                                    : "border-l-4 border-transparent"
+                                    ? "bg-white/15 text-white shadow-sm"
+                                    : "text-white/75"
                                 }                                     
-                              text-white hover:bg-black/20 hover:text-white 
-                              ${isCollapsed ? "h-20 w-28 justify-center" : "h-12"} 
-                              rounded-lg font-medium 
+                              hover:bg-white/10 hover:text-white 
+                              ${isCollapsed ? "h-11 w-11 justify-center" : "h-11"} 
+                              rounded-xl font-medium 
                               cursor-pointer transition-all duration-200 
                               active:opacity-70 active:scale-95 
                               ${isCollapsed ? "mx-auto" : ""}
@@ -148,8 +148,8 @@ export default function AppSideBar() {
                       active:opacity-70 active:scale-95
                       ${
                         isCollapsed
-                          ? "h-20 w-28 mx-auto justify-center"
-                          : "h-12 justify-center"
+                          ? "h-11 w-11 mx-auto justify-center"
+                          : "h-11 justify-center"
                       }
                     `}
                   >

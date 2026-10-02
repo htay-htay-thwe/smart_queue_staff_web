@@ -113,24 +113,26 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSideBar />
-      <main className="w-full">
-        <div className="p-4 justify-between flex items-center border-b bg-white sticky top-0 z-10 shadow-sm">
-          <SidebarTrigger className="hover:bg-gray-100 " />
+      <main className="min-w-0 w-full bg-slate-50">
+        <div className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6">
+          <div className="flex items-center gap-3">
+            <SidebarTrigger className="size-9 rounded-lg hover:bg-slate-100" />
+            <div className="hidden sm:block">
+              <p className="text-sm font-semibold text-slate-900">Staff workspace</p>
+              <p className="text-xs text-slate-500">Manage today’s service</p>
+            </div>
+          </div>
           <SearchItem onSearch={setSearchQuery} />
         </div>
 
-        <div className="relative min-h-[calc(100vh-64px)]">
-          <div className="pb-20" ref={contentRef}>
+        <div className="relative min-h-[calc(100vh-4rem)]">
+          <div className="pb-24" ref={contentRef}>
             {children}
           </div>
 
           {/* Footer */}
-          <div className="absolute  bottom-0 left-0 right-0 flex items-center justify-center p-10 text-sm text-muted-foreground">
-            <div className="flex items-center gap-5">
-              <span>Smart Queue System © 2026 smart queue, Inc.</span>
-              <span className="h-4 w-px bg-gray-300" />
-              <span>Community guidelines · Terms of service</span>
-            </div>
+          <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center border-t border-slate-200/70 px-4 py-6 text-center text-xs text-slate-400">
+            <span>© 2026 Smart Queue · Staff management workspace</span>
           </div>
         </div>
       </main>

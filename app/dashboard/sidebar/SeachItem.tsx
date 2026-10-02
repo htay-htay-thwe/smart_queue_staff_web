@@ -12,17 +12,18 @@ type Props = {
 
 export default function SearchItem({ onSearch }: Props) {
   return (
-    <div className=" w-full flex flex-row max-w-md justify-end gap-4 px-10">
+    <div className="flex w-full max-w-md flex-row items-center justify-end gap-2 sm:gap-3">
       <NotificationBell />
 
-        <InputGroup className="w-full">
+        <InputGroup className="hidden w-full rounded-xl border-slate-200 bg-slate-50 shadow-none transition-colors focus-within:bg-white sm:flex">
           <InputGroupInput
-            id="input-group-url"
-            placeholder="Search here ..."
+            id="workspace-search"
+            aria-label="Search this page"
+            placeholder="Search this page…"
             onChange={(e) => onSearch(e.target.value)}
           />
           <InputGroupAddon align="inline-end">
-            <Search size={28} strokeWidth={1.5} absoluteStrokeWidth />
+            <Search className="size-4 text-slate-400" />
           </InputGroupAddon>
         </InputGroup>
     </div>
