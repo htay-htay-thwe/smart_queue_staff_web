@@ -9,6 +9,7 @@ import { useShopStore } from "@/store/shopStore";
 import { useNotiStore } from "@/store/notiStore";
 import { useQueryClient } from "@tanstack/react-query";
 import Mark from "mark.js";
+import { BACKEND_SOCKET_URL } from "@/lib/runtime-config";
 
 export default function DashboardLayout({
   children,
@@ -49,8 +50,12 @@ export default function DashboardLayout({
     if (!shopData?._id) return;
 
     if (!socketRef.current) {
-      socketRef.current = io("https://smart-q-backend-nestjs.onrender.com", {
+      socketRef.current = io(BACKEND_SOCKET_URL, {
         transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1_000,
+        timeout: 15_000,
       });
 
       // Debug: Log all incoming events
@@ -102,11 +107,15 @@ export default function DashboardLayout({
       socketRef.current.on("disconnect", () => {
         console.log("Socket disconnected");
       });
+
+      socketRef.current.on("connect_error", (error) => {
+        console.warn("Socket connection failed; queue polling remains active", error.message);
+      });
     }
 
     return () => {
-      // DO NOT disconnect here
-      // Let socket live during app lifetime
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [shopData._id, queryClient]);
 

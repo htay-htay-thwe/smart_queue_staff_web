@@ -175,8 +175,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Create a `.env.local` file in the project root:
 
 ```env
-# Backend REST API base URL
-NEXT_PUBLIC_API_URL=https://smart-q-backend-nestjs.onrender.com
+# Backend REST API base URL (include /api)
+NEXT_PUBLIC_BACKEND_API_URL=https://smart-q-backend-nestjs.onrender.com/api
+
+# Socket.IO backend origin (do not include /api)
+NEXT_PUBLIC_BACKEND_SOCKET_URL=https://smart-q-backend-nestjs.onrender.com
 ```
 
 ---
