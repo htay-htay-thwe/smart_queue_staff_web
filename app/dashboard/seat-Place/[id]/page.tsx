@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import SeatScroll from "../card/SeatScroll";
 import { ArrowLeft, Armchair, QrCode } from "lucide-react";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useAssignTable, useFetchQueue } from "@/hooks/useQueue";
 import { Loading } from "@/components/ui/loading";
 import { useShopStore } from "@/store/shopStore";
-import { useParams } from "next/dist/client/components/navigation";
+import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -23,10 +23,7 @@ export default function SeatPlace() {
   const queueUserData = useFetchQueue(shopData._id);
   const queueId = params.id as string;
   const queueUser = queueUserData.data?.find((q) => q._id === queueId);
-  console.log("Queue user data:", queueUser);
   const tableTypes = shopData.tableTypes;
-  console.log("Shop table types:", queueUser?.table_type_id, tableTypes);
-console.log(queueUser?.customer_id.name);
   // Clean seat type lookup function
   function getSeatTypeLabel(table_type_id: string): string {
     const typesRaw = queueUser?.shop_id?.tableTypes || shopData.tableTypes;
@@ -80,6 +77,16 @@ console.log(queueUser?.customer_id.name);
       table_no,
     });
   };
+
+  if (queueUserData.isPending) return <Loading />;
+
+  if (queueUserData.isError) {
+    return <div className="p-6"><div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700"><h1 className="text-xl font-bold">Unable to load this queue</h1><p className="mt-2 text-sm">Please refresh the page and try again.</p><Button className="mt-4" variant="outline" onClick={() => queueUserData.refetch()}>Try again</Button></div></div>;
+  }
+
+  if (!queueUser) {
+    return <div className="p-6"><div className="rounded-2xl border border-slate-200 bg-white p-8 text-center"><Armchair className="mx-auto h-10 w-10 text-slate-400" /><h1 className="mt-4 text-xl font-bold text-slate-800">Queue is no longer active</h1><p className="mt-2 text-sm text-slate-500">It may already be seated, expired, or cancelled.</p><Button className="mt-5 bg-[#1E7A9B]" onClick={() => router.push("/dashboard/queue")}>Back to queue</Button></div></div>;
+  }
 
   return (
     <div className="p-6 min-h-screen">
@@ -142,7 +149,7 @@ console.log(queueUser?.customer_id.name);
                 Customer Name
               </p>
               <span className="text-2xl font-bold text-gray-900">
-                {queueUser?.customer_id.name}
+                {queueUser.customer_id?.name || "Customer"}
               </span>
               <span className="ml-2 text-sm text-[#1E7A9B] font-medium">
                 ({getSeatTypeLabel(queueUser?.table_type_id || "")})
@@ -211,8 +218,9 @@ console.log(queueUser?.customer_id.name);
           <Button
             className="bg-linear-to-r from-[#157aa2] to-[#1C7AA5] hover:from-[#1C7AA5] hover:to-[#157aa2] px-8 py-3 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             onClick={assignTable}
+            disabled={isPending}
           >
-            Assign Seat
+            {isPending ? "Assigning…" : "Assign Seat"}
           </Button>
         </div>
       </div>

@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 export const getQueue = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();
-  console.log("token", token);
   const res = await api.get(`queues/shop/${shopId}?t=${Date.now()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -18,7 +17,6 @@ export const getQueue = async (shopId: string): Promise<Queue[]> => {
 export const getQueueHistory = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();
-  console.log("token", token);
   const res = await api.get<Queue[]>(`queues/getQueue-history/${shopId}?t=${Date.now()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -45,7 +43,6 @@ export const assignTableToQueue = async ({
     shop_id,
     table_no,
   });
-  console.log("Assigning table with token:", token);
   const res = await api.patch(
     `queues/assign-table`,
     { queue_id, table_type_id, shop_id, table_no },
@@ -60,7 +57,6 @@ export const assignTableToQueue = async ({
 
 export const occupyTable = async ({ shop_id }: { shop_id: string }) => {
   const token = await getAuthCookie();
-  console.log("Occupying table with token:", token);
   const res = await api.get(`queues/get-table-status/${shop_id}?t=${Date.now()}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -82,7 +78,6 @@ export const releaseTableAndUpdateQueue = async ({
     table_type_id,
   });
   const token = await getAuthCookie();
-  console.log("Releasing table with token:", token);
   const res = await api.patch(
     `queues/free-table`,
     { shop_id, table_no, table_type_id },
