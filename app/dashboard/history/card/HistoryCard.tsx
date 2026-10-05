@@ -1,6 +1,6 @@
 import profile from "@/asset/image/default.png";
 import Image from "next/image";
-import { Calendar, Armchair, CheckCircle2 } from "lucide-react";
+import { Calendar, Armchair, CheckCircle2, CircleX } from "lucide-react";
 import { Queue } from "@/types/shopQueue.api.types";
 import {
   Table,
@@ -16,6 +16,13 @@ interface OneCardProps {
 }
 
 export default function HistoryCard({ data }: OneCardProps) {
+  const isExpired = (status: string) => ["expired", "no-show", "canceled", "cancelled"].includes(status.toLowerCase());
+  const statusLabel = (status: string) => ["expired", "no-show"].includes(status.toLowerCase())
+    ? "Expired · No-show"
+    : status;
+  const statusClass = (status: string) => isExpired(status)
+    ? "bg-red-50 text-red-700 border-red-200"
+    : "bg-[#157aa2]/10 text-[#157aa2] border-[#157aa2]/20";
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
@@ -58,9 +65,9 @@ export default function HistoryCard({ data }: OneCardProps) {
                   </p>
                 )}
               </div>
-              <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 bg-[#157aa2]/10 text-[#157aa2] rounded-lg text-xs font-bold capitalize border border-[#157aa2]/20">
-                <CheckCircle2 className="w-3 h-3" />
-                {user.status}
+              <span className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold capitalize border ${statusClass(user.status)}`}>
+                {isExpired(user.status) ? <CircleX className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                {statusLabel(user.status)}
               </span>
             </div>
             {/* Bottom row: Queue / Table / Date */}
@@ -169,9 +176,9 @@ export default function HistoryCard({ data }: OneCardProps) {
 
                 {/* Status */}
                 <TableCell>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#157aa2]/10 text-[#157aa2] rounded-xl text-xs font-bold capitalize border border-[#157aa2]/20">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {user.status}
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold capitalize border ${statusClass(user.status)}`}>
+                    {isExpired(user.status) ? <CircleX className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                    {statusLabel(user.status)}
                   </span>
                 </TableCell>
               </TableRow>

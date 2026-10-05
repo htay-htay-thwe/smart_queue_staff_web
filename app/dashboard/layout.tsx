@@ -105,6 +105,17 @@ export default function DashboardLayout({
         queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
       });
 
+      socketRef.current.on("queueExpired", (data) => {
+        useNotiStore.getState().addNotification({
+          type: "alert",
+          title: "Queue expired · No-show",
+          message: `Queue <strong>#${data?.queue_number ?? "—"}</strong> did not check in before the deadline.`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["queue"] });
+        queryClient.invalidateQueries({ queryKey: ["queueHistory"] });
+        queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
+      });
+
       socketRef.current.on("disconnect", () => {
         console.log("Socket disconnected");
       });

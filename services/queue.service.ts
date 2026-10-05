@@ -19,7 +19,7 @@ export const getQueueHistory = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();
   console.log("token", token);
-  const res = await api.get<Queue[]>(`queues/getQueue-history/${shopId}`, {
+  const res = await api.get<Queue[]>(`queues/getQueue-history/${shopId}?t=${Date.now()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -61,7 +61,7 @@ export const assignTableToQueue = async ({
 export const occupyTable = async ({ shop_id }: { shop_id: string }) => {
   const token = await getAuthCookie();
   console.log("Occupying table with token:", token);
-  const res = await api.get(`queues/get-table-status/${shop_id}`, {
+  const res = await api.get(`queues/get-table-status/${shop_id}?t=${Date.now()}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
