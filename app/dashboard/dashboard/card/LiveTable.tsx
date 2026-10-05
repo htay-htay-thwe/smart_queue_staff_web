@@ -40,7 +40,7 @@ export default function LiveTable() {
   const queueUserData = useFetchQueue(shopData._id);
   const queueUsers =
     queueUserData.data?.filter(
-      (q) => !["seated", "finished", "no-show", "cancelled", "canceled"].includes(String(q?.status).toLowerCase()),
+      (q) => !["finished", "no-show", "cancelled", "canceled"].includes(String(q?.status).trim().toLowerCase()),
     ) || [];
   console.log("Fetched queue users:", queueUsers);
 
@@ -88,7 +88,7 @@ export default function LiveTable() {
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Time Queued</TableHead>
               <TableHead className="text-right">Estimated Time</TableHead>
-              {pathname === "/dashboard/queue" && (
+              {pathname === "/dashboard/queue" && !["seated", "serving", "in service"].includes(queue.status.trim().toLowerCase()) && (
                 <TableHead className="text-center">Action</TableHead>
               )}
             </TableRow>

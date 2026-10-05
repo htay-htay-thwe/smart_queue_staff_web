@@ -7,7 +7,7 @@ export const getQueue = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();
   console.log("token", token);
-  const res = await api.get(`queues/shop/${shopId}`, {
+  const res = await api.get(`queues/shop/${shopId}?t=${Date.now()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
