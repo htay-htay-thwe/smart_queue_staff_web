@@ -84,6 +84,7 @@ export default function DashboardLayout({
 
         queryClient.invalidateQueries({ queryKey: ["queue"] });
         queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
+        queryClient.invalidateQueries({ queryKey: ["queueHistory"] });
       });
 
       socketRef.current.on("newCustomerQueue", (data) => {
