@@ -62,6 +62,7 @@ export type QueueStatus =
   | "canceled"
   | "seated"
   | "finished"
+  | "no-show"
   | "qr-scanned";
 
 export interface Customer {
@@ -86,6 +87,8 @@ export interface Queue {
   userRequirements: string;
   createdAt: string;
   updatedAt: string;
+  readyAt?: string | null;
+  noShowDeadline?: string | null;
   __v: number;
 
   customer_id: Customer;

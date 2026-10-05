@@ -40,7 +40,7 @@ export default function LiveTable() {
   const queueUserData = useFetchQueue(shopData._id);
   const queueUsers =
     queueUserData.data?.filter(
-      (q) => String(q?.status).toLowerCase() !== "seated",
+      (q) => !["seated", "finished", "no-show", "cancelled", "canceled"].includes(String(q?.status).toLowerCase()),
     ) || [];
   console.log("Fetched queue users:", queueUsers);
 
@@ -148,25 +148,40 @@ export default function LiveTable() {
                     <Clock className="inline mr-1 mb-1 h-4 w-4 self-start" />
                     <Countdown
                       date={
-                        new Date(queue.createdAt).getTime() +
-                        queue.estimated_wait_time * 60 * 1000
+                        queue.status.toLowerCase() === "ready to seat" && queue.noShowDeadline
+                          ? new Date(queue.noShowDeadline).getTime()
+                          : new Date(queue.createdAt).getTime() +
+                            queue.estimated_wait_time * 60 * 1000
                       }
                       renderer={({ total }) => {
-                        if (total <= 0) return <span>0 min</span>;
+                        if (total <= 0) {
+                          return queue.status.toLowerCase() === "ready to seat" ? (
+                            <span className="font-semibold text-red-600">Check-in expired</span>
+                          ) : (
+                            <span>0 min</span>
+                          );
+                        }
 
                         const totalMinutes = Math.floor(total / (1000 * 60));
                         const hours = Math.floor(totalMinutes / 60);
                         const minutes = totalMinutes % 60;
+                        const isReadyToSeat = queue.status.toLowerCase() === "ready to seat";
+                        const isUrgent = isReadyToSeat && total < 5 * 60 * 1000;
+                        const label = isReadyToSeat ? "Check in: " : "";
 
                         if (hours >= 1) {
                           return (
-                            <span>
-                              {hours} h {minutes} min
+                            <span className={isUrgent ? "font-semibold text-amber-600" : ""}>
+                              {label}{hours} h {minutes} min
                             </span>
                           );
                         }
 
-                        return <span>{minutes} min</span>;
+                        return (
+                          <span className={isUrgent ? "font-semibold text-amber-600" : ""}>
+                            {label}{minutes} min
+                          </span>
+                        );
                       }}
                     />
                   </TableCell>
