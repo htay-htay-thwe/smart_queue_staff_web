@@ -25,7 +25,7 @@ export default function QueueDining() {
 
   const queueHistories = useMemo(
     () => (queueUserData.data ?? []).filter(
-      (q) => String(q?.status).toLowerCase() === "seated",
+      (q) => ["seated", "serving", "in service"].includes(String(q?.status).trim().toLowerCase()),
     ),
     [queueUserData.data],
   );

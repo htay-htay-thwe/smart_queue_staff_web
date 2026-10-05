@@ -18,8 +18,8 @@ export const useFetchQueue = (shopId: string) => {
     queryFn: () => getQueue(shopId),
     staleTime: 0,
     refetchOnWindowFocus: true,
-    refetchInterval: 30_000,          // fallback poll every 30s
-    refetchIntervalInBackground: true, // keep polling even when tab is backgrounded
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
   });
 };
 
