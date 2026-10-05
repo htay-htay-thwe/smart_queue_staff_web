@@ -4,7 +4,6 @@ import profile from "@/asset/image/default.png";
 import Image from "next/image";
 import { Clock, Armchair, Utensils, LogOut } from "lucide-react";
 import { Queue } from "@/types/shopQueue.api.types";
-import { useRouter } from "next/navigation";
 import { useReleaseTable } from "@/hooks/useQueue";
 
 interface OneCardProps {
@@ -12,8 +11,11 @@ interface OneCardProps {
 }
 
 export default function OneCard({ data }: OneCardProps) {
-  const router = useRouter();
-  const { mutate: releaseTableMutate, isPending } = useReleaseTable(router);
+  const {
+    mutate: releaseTableMutate,
+    isPending,
+    variables: releasingTable,
+  } = useReleaseTable();
 
   if (!Array.isArray(data) || data.length === 0) {
     return (
@@ -33,9 +35,15 @@ export default function OneCard({ data }: OneCardProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {data.map((user, index) => (
+      {data.map((user) => {
+        const isReleasing =
+          isPending &&
+          releasingTable?.table_no === user.table_no &&
+          releasingTable?.table_type_id === user.table_type_id;
+
+        return (
         <div
-          key={index}
+          key={user._id}
           className="group relative bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
         >
           <div className="p-5">
@@ -132,11 +140,12 @@ export default function OneCard({ data }: OneCardProps) {
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-rose-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
-              {isPending ? "Releasing..." : "Free Table"}
+              {isReleasing ? "Releasing..." : "Free Table"}
             </button>
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

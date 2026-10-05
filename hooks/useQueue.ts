@@ -58,7 +58,7 @@ export const useOccupyTable = (shopId: string) => {
   });
 };
 
-export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
+export const useReleaseTable = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: releaseTableAndUpdateQueue,
@@ -84,7 +84,6 @@ export const useReleaseTable = (router: ReturnType<typeof useRouter>) => {
       queryClient.invalidateQueries({ queryKey: ["queue"] });
       queryClient.invalidateQueries({ queryKey: ["occupyTable"] });
       queryClient.invalidateQueries({ queryKey: ["queueHistory"] });
-      router.push("/dashboard/queue");
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to release table", {
