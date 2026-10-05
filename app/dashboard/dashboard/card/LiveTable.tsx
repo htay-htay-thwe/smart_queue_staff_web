@@ -88,7 +88,7 @@ export default function LiveTable() {
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Time Queued</TableHead>
               <TableHead className="text-right">Estimated Time</TableHead>
-              {pathname === "/dashboard/queue" && !["seated", "serving", "in service"].includes(queue.status.trim().toLowerCase()) && (
+              {pathname === "/dashboard/queue" && (
                 <TableHead className="text-center">Action</TableHead>
               )}
             </TableRow>
@@ -185,7 +185,7 @@ export default function LiveTable() {
                       }}
                     />
                   </TableCell>
-                  {pathname === "/dashboard/queue" && (
+                  {pathname === "/dashboard/queue" && !["seated", "serving", "in service"].includes(queue.status.trim().toLowerCase()) && (
                     <TableCell className="text-center">
                       <Link href={`/dashboard/seat-Place/${queue._id}`}>
                         <Button disabled={queue.status == "waiting"} className="bg-[#1c7aa5] transition-all duration-300 hover:bg-[#297a9f] hover:scale-105">
