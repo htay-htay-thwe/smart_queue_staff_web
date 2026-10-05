@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Copy, QrCode, RefreshCw } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
+import { useShopStore } from "@/store/shopStore";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,19 +16,29 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-function createQrCode() {
+function createQrCode(shopId: string) {
   const values = new Uint32Array(1);
   crypto.getRandomValues(values);
-  return `uuid-${String(values[0] % 100_000_000).padStart(8, "0")}`;
+  return JSON.stringify({
+    type: "smart-queue-check-in",
+    version: 1,
+    shop_id: shopId,
+    queue_qr: `uuid-${String(values[0] % 100_000_000).padStart(8, "0")}`,
+  });
 }
 
 export default function GenerateQrDialog() {
+  const shopId = useShopStore((state) => state.shop._id);
   const [isOpen, setIsOpen] = useState(false);
   const [qrValue, setQrValue] = useState("");
 
   const generateNewQr = () => {
-    let nextValue = createQrCode();
-    while (nextValue === qrValue) nextValue = createQrCode();
+    if (!shopId) {
+      toast.error("Shop information is unavailable. Please sign in again.");
+      return;
+    }
+    let nextValue = createQrCode(shopId);
+    while (nextValue === qrValue) nextValue = createQrCode(shopId);
     setQrValue(nextValue);
   };
 
@@ -80,7 +91,7 @@ export default function GenerateQrDialog() {
               className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 font-mono text-lg font-semibold text-gray-800 transition-colors hover:bg-gray-200"
               aria-label="Copy QR code"
             >
-              {qrValue}
+              {JSON.parse(qrValue).queue_qr}
               <Copy className="h-4 w-4 text-gray-500" />
             </button>
 
