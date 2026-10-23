@@ -72,6 +72,7 @@ export interface Customer {
   email: string | null;
   phoneNumber: string | null;
   profileImg?: string;
+  profileImage?: string;
   isVerified: boolean;
   __v: number;
 }

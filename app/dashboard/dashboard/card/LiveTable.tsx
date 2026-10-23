@@ -114,11 +114,19 @@ export default function LiveTable() {
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8">
                         <Image
-                          src={queue.customer_id?.profileImg || profile}
-                          alt="User Avatar"
+                          src={
+                            queue.customer_id?.profileImg ||
+                            queue.customer_id?.profileImage ||
+                            profile
+                          }
+                          alt={`${queue.customer_id?.name || "Customer"} profile`}
                           width={32}
                           height={32}
                           className="rounded-full h-full w-full  border border-1 border-[#1E7A9B] object-cover"
+                          onError={(event) => {
+                            event.currentTarget.src = profile.src;
+                            event.currentTarget.srcset = "";
+                          }}
                         />
                       </div>
                       <div className="text-base font-medium">
