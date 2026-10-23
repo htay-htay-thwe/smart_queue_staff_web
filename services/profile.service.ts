@@ -195,3 +195,13 @@ export const changeProfileImage = async (data: ProfileUpdateRequest) => {
   });
   return res.data;
 };
+
+export const changeQueueAvailability = async (isQueueOpen: boolean) => {
+  const token = await getAuthCookie();
+  const res = await api.patch(
+    "shops/queue-availability",
+    { isQueueOpen },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res.data;
+};

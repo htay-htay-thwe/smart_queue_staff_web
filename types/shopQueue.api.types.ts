@@ -31,6 +31,7 @@ export interface ShopData {
   email: string;
   shopImg: string;
   description: string;
+  isQueueOpen?: boolean;
   address: {
     location: {
       type: "Point";

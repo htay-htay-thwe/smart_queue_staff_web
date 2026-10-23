@@ -7,6 +7,7 @@ import { Settings as SettingsIcon } from "lucide-react";
 import ShopInformation from "./card/ShopInformation";
 import { useShopStore } from "@/store/shopStore";
 import { PageHeader } from "@/components/dashboard/page-header";
+import QueueAvailability from "./card/QueueAvailability";
 
 export default function Settings() {
   const shopData = useShopStore((s) => s.shop);
@@ -15,15 +16,18 @@ export default function Settings() {
     <div className="page-shell">
       <PageHeader title="Account Settings" description="Manage your business profile, contact details, and location." icon={SettingsIcon} eyebrow="Workspace" />
       <div className="animate-fade-in-delay-1">
-        <Profile shop={shopData} />
+        <QueueAvailability />
       </div>
       <div className="animate-fade-in-delay-2">
-        <AccountInformation shop={shopData} />
+        <Profile shop={shopData} />
       </div>
       <div className="animate-fade-in-delay-3">
-        <AddressBar shop={shopData} />
+        <AccountInformation shop={shopData} />
       </div>
       <div className="animate-fade-in-delay-4">
+        <AddressBar shop={shopData} />
+      </div>
+      <div>
         <ShopInformation shop={shopData} />
       </div>
     </div>

@@ -16,6 +16,7 @@ const initialShop: ShopData = {
   email: "",
   shopImg: "",
   description: "",
+  isQueueOpen: true,
   address: {
     location: {
       type: "Point",
