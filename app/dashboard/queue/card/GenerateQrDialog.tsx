@@ -1,112 +1,77 @@
 "use client";
 
-import { useState } from "react";
-import { Copy, QrCode, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { CheckCircle2, Copy, Loader2, QrCode, RefreshCw } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import { useShopStore } from "@/store/shopStore";
-
+import { createShopQr, getShopQrStatus } from "@/services/queue.service";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-function createQrCode(shopId: string) {
-  const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
-  return JSON.stringify({
-    type: "smart-queue-check-in",
-    version: 1,
-    shop_id: shopId,
-    queue_qr: `uuid-${String(values[0] % 100_000_000).padStart(8, "0")}`,
-  });
-}
+type QrData = { token: string; qr_value: string; expires_at: string };
 
 export default function GenerateQrDialog() {
   const shopId = useShopStore((state) => state.shop._id);
   const [isOpen, setIsOpen] = useState(false);
-  const [qrValue, setQrValue] = useState("");
+  const [qr, setQr] = useState<QrData | null>(null);
+  const [used, setUsed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const generateNewQr = () => {
-    if (!shopId) {
-      toast.error("Shop information is unavailable. Please sign in again.");
-      return;
-    }
-    let nextValue = createQrCode(shopId);
-    while (nextValue === qrValue) nextValue = createQrCode(shopId);
-    setQrValue(nextValue);
-  };
+  const generateNewQr = useCallback(async () => {
+    if (!shopId) { toast.error("Shop information is unavailable. Please sign in again."); return; }
+    setLoading(true);
+    try {
+      const next = await createShopQr(shopId);
+      setQr({ token: next.token, qr_value: next.qr_value, expires_at: next.expires_at });
+      setUsed(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Could not generate QR code");
+    } finally { setLoading(false); }
+  }, [shopId]);
+
+  useEffect(() => {
+    if (!isOpen || !qr || used) return;
+    const timer = setInterval(async () => {
+      try {
+        const status = await getShopQrStatus(qr.token);
+        if (status.used) {
+          setUsed(true);
+          toast.success("Customer check-in confirmed. Generate a new QR for the next customer.");
+        }
+      } catch { /* A temporary polling failure must not close the QR dialog. */ }
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isOpen, qr, used]);
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (open) generateNewQr();
+    if (open && !qr && !loading) void generateNewQr();
   };
-
   const copyCode = async () => {
-    await navigator.clipboard.writeText(qrValue);
-    toast.success("QR code copied");
+    if (!qr) return;
+    await navigator.clipboard.writeText(qr.qr_value);
+    toast.success("QR payload copied");
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="h-11 bg-[#1c7aa5] px-5 text-white shadow-md transition-all hover:bg-[#176b91] hover:shadow-lg">
-          <QrCode className="h-5 w-5" />
-          Generate QR
-        </Button>
-      </DialogTrigger>
+  return <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <DialogTrigger asChild><Button className="h-11 bg-[#1E7A9B] px-5 text-white shadow-md hover:bg-[#176680]"><QrCode className="h-5 w-5"/>Generate QR</Button></DialogTrigger>
+    <DialogContent className="sm:max-w-md">
+      <DialogHeader className="items-center text-center sm:text-center">
+        <div className={`mb-2 flex h-12 w-12 items-center justify-center rounded-full ${used ? "bg-emerald-100" : "bg-[#1E7A9B]/10"}`}>
+          {used ? <CheckCircle2 className="h-6 w-6 text-emerald-600"/> : <QrCode className="h-6 w-6 text-[#1E7A9B]"/>}
+        </div>
+        <DialogTitle className="text-2xl">{used ? "QR already used" : "Customer check-in QR"}</DialogTitle>
+        <DialogDescription>{used ? "This UUID belongs to one completed scan and cannot be reused. Generate a fresh QR for the next customer." : "Only a customer whose status is Ready to seat can scan this single-use QR."}</DialogDescription>
+      </DialogHeader>
 
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader className="items-center text-center sm:text-center">
-          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-[#1c7aa5]/10">
-            <QrCode className="h-6 w-6 text-[#1c7aa5]" />
-          </div>
-          <DialogTitle className="text-2xl">Scan to join the queue</DialogTitle>
-          <DialogDescription>
-            This QR code is unique. Generate a new one whenever you need a
-            fresh scan code.
-          </DialogDescription>
-        </DialogHeader>
-
-        {qrValue && (
-          <div className="flex flex-col items-center gap-5 py-3">
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
-              <QRCodeSVG
-                value={qrValue}
-                size={240}
-                level="H"
-                marginSize={1}
-                title={`Queue code ${qrValue}`}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={copyCode}
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 font-mono text-lg font-semibold text-gray-800 transition-colors hover:bg-gray-200"
-              aria-label="Copy QR code"
-            >
-              {JSON.parse(qrValue).queue_qr}
-              <Copy className="h-4 w-4 text-gray-500" />
-            </button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={generateNewQr}
-            >
-              <RefreshCw className="h-4 w-4" />
-              Generate New QR
-            </Button>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+      {loading && <div className="flex min-h-72 flex-col items-center justify-center gap-3"><Loader2 className="h-8 w-8 animate-spin text-[#1E7A9B]"/><p className="text-sm text-slate-500">Generating secure UUID…</p></div>}
+      {!loading && qr && <div className="flex flex-col items-center gap-5 py-3">
+        <div className={`relative rounded-2xl border bg-white p-5 shadow-sm ${used ? "opacity-25 grayscale" : ""}`}><QRCodeSVG value={qr.qr_value} size={240} level="H" marginSize={1} title="Single-use Smart Queue check-in QR"/></div>
+        <button type="button" onClick={copyCode} disabled={used} className="flex max-w-full items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 font-mono text-xs font-semibold text-gray-700 disabled:opacity-40" aria-label="Copy QR payload"><span className="max-w-72 truncate">{qr.token}</span><Copy className="h-4 w-4 shrink-0"/></button>
+        {!used && <p className="text-center text-xs text-slate-500">Waiting for one Ready to seat customer to scan…</p>}
+        <Button type="button" variant={used ? "default" : "outline"} className={`w-full ${used ? "bg-[#1E7A9B] hover:bg-[#176680]" : ""}`} onClick={() => void generateNewQr()}><RefreshCw className="h-4 w-4"/>Generate New QR</Button>
+      </div>}
+    </DialogContent>
+  </Dialog>;
 }

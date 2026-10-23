@@ -14,6 +14,30 @@ export const getQueue = async (shopId: string): Promise<Queue[]> => {
   return res.data.data;
 };
 
+export const createShopQr = async (shop_id: string) => {
+  const token = await getAuthCookie();
+  const res = await api.post(
+    "queues/shop-qr",
+    { shop_id },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res.data.data as {
+    token: string;
+    qr_value: string;
+    used: boolean;
+    expires_at: string;
+  };
+};
+
+export const getShopQrStatus = async (qrToken: string) => {
+  const token = await getAuthCookie();
+  const res = await api.get(
+    `queues/shop-qr/${encodeURIComponent(qrToken)}/status?t=${Date.now()}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return res.data.data as { used: boolean; expires_at: string };
+};
+
 export const getQueueHistory = async (shopId: string): Promise<Queue[]> => {
   console.log("Fetching queue for shopId:", shopId);
   const token = await getAuthCookie();

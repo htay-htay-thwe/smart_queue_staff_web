@@ -46,7 +46,7 @@ export default function SeatPlace() {
   }
 
   const assignTable = () => {
-    if (!queueUser?.queue_qr) {
+    if (queueUser?.status?.trim().toLowerCase() !== "qr-scanned" || !queueUser?.queue_qr) {
       toast.error("Please scan QR first.", {
         position: "top-right",
         style: {
@@ -64,6 +64,13 @@ export default function SeatPlace() {
         },
         description: "You must select a table before assigning a seat.",
       });
+      return;
+    }
+    if (selected.table_type_id !== queueUser.table_type_id) {
+      toast.error("Wrong seat type selected.", {
+        description: `This customer requested ${getSeatTypeLabel(queueUser.table_type_id)}. Select the same table type only.`,
+      });
+      setSelected(null);
       return;
     }
     if (!queueUserData.data?.length) return;
@@ -187,7 +194,7 @@ export default function SeatPlace() {
               Restaurant Seating Layout
             </h2>
             <p className="text-sm text-gray-500">
-              Click on any available table to select
+              Only {getSeatTypeLabel(queueUser.table_type_id)} tables can be assigned to this customer
             </p>
           </div>
 
@@ -229,6 +236,7 @@ export default function SeatPlace() {
         shopData={shopData}
         setSelected={setSelected}
         selected={selected}
+        allowedTableTypeId={queueUser.table_type_id}
       />
 
       {isPending && <Loading />}

@@ -9,12 +9,14 @@ type SeatScrollProps = {
   selected: { id: string; table_type_id: string } | null;
   setSelected: (selected: { id: string; table_type_id: string } | null) => void;
   shopData: ShopData;
+  allowedTableTypeId: string;
 };
 
 export default function SeatScroll({
   selected,
   setSelected,
   shopData,
+  allowedTableTypeId,
 }: SeatScrollProps) {
   const data = {
     twoPeople: {
@@ -84,7 +86,9 @@ export default function SeatScroll({
   return (
     <ScrollArea className="h-150 w-full rounded-2xl border-2 border-gray-200 p-6 bg-gray-50">
       {data &&
-        Object.entries(data).map(([key, value]) => {
+        Object.entries(data)
+        .filter(([, value]) => value.table_type_id === allowedTableTypeId)
+        .map(([key, value]) => {
           const config = getSectionConfig(key);
           console.log(
             `Rendering section: ${key} with capacity ${value.table_type_id}`,
@@ -105,7 +109,7 @@ export default function SeatScroll({
                     {config.label}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {value.capacity} tables available
+                    {value.capacity} matching tables configured
                   </p>
                 </div>
               </div>
