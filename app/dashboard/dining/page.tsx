@@ -8,16 +8,7 @@ import { useShopStore } from "@/store/shopStore";
 import PaginationSeatAssign from "../queue/card/PaginationSeatAssign";
 import { PageHeader } from "@/components/dashboard/page-header";
 
-const FILTERS = [
-  { label: "All Time", value: "all" },
-  { label: "Today", value: "today" },
-  { label: "Yesterday", value: "yesterday" },
-  { label: "Last 7 Days", value: "week" },
-  { label: "Last 30 Days", value: "month" },
-];
-
 export default function QueueDining() {
-  const [selectedFilter, setSelectedFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
   const shopData = useShopStore((s) => s.shop);
@@ -30,32 +21,8 @@ export default function QueueDining() {
     [queueUserData.data],
   );
 
-  const filteredData = useMemo(() => {
-    if (selectedFilter === "all") return queueHistories;
-
-    return queueHistories.filter((item) => {
-      const itemDate = new Date(item.updatedAt);
-      const today = new Date();
-      const diffDays = Math.floor(
-        (today.getTime() - itemDate.getTime()) / 86400000,
-      );
-      switch (selectedFilter) {
-        case "today":
-          return diffDays === 0;
-        case "yesterday":
-          return diffDays === 1;
-        case "week":
-          return diffDays >= 0 && diffDays <= 7;
-        case "month":
-          return diffDays >= 0 && diffDays <= 30;
-        default:
-          return true;
-      }
-    });
-  }, [selectedFilter, queueHistories]);
-
-  const totalPages = Math.ceil(filteredData.length / 10);
-  const pagedData = filteredData.slice((currentPage - 1) * 10, currentPage * 10);
+  const totalPages = Math.ceil(queueHistories.length / 10);
+  const pagedData = queueHistories.slice((currentPage - 1) * 10, currentPage * 10);
 
   return (
     <div className="page-shell">
@@ -69,25 +36,6 @@ export default function QueueDining() {
             </div>
         </div>} />
 
-      <div className="surface-card mb-6 flex items-center gap-2 overflow-x-auto p-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => {
-                setSelectedFilter(f.value);
-                setCurrentPage(1);
-              }}
-              aria-pressed={selectedFilter === f.value}
-              className={`filter-pill whitespace-nowrap ${
-                selectedFilter === f.value
-                  ? "filter-pill-active"
-                  : ""
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-      </div>
       <div>
         <OneCard data={pagedData} />
         <div className="mt-6">
